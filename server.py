@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from warranty import get_current_warranty
 from warranty import is_valid_imei
 from waitress import serve
+from SKU_designation import get_product_description
 import json
 
 app = Flask(__name__)
@@ -28,15 +29,24 @@ def get_warranty():
     if data['success'] == False:
        return render_template('imei-not-found.html')  
     
+    
+
     # Check if the request was successful (status code 200)
     if warranty_data.status_code == 200:
         # Load the JSON data
         # response_json = warranty_data.json()
         # Load the JSON data
         data = json.loads(warranty_data.text)
+        sku_value = data['data']['device']['sku']
+    # Get the product description based on the SKU
+        result = get_product_description(sku_value)
+        print(f"Description: {result}")  # Print the result for debugging purposes
+        print(sku_value)
+
         return render_template(
             "warranty.html",
-            sku_value = data['data']['device']['sku'],
+            Description_value = result,
+            sku_value = sku_value,
             product_line_id_value = data['data']['device']['product_line_id'],
             product_line_value = data['data']['device']['product_line'],
             imei_value = data['data']['device']['imei'],

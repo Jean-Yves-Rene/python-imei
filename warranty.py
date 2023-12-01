@@ -84,12 +84,12 @@ if __name__ == "__main__":
 
 
     # Print the SKU
-    print(f'sku: {sku_value}')
-    print(f'product_line_id: {product_line_id_value}')
-    print(f'product_line: {product_line_value}')
-    print(f'imei: {imei_value}')
-    print(f'serial_number: {serial_number_value}')
-    print(f'warranty_status: {warranty_status_value}')
-    print(f'warranty_end_date: {warranty_end_date_value}')
-    print(f'product_line_authorization: {product_line_authorization_value}')
+    # print(f'sku: {sku_value}')
+    # print(f'product_line_id: {product_line_id_value}')
+    # print(f'product_line: {product_line_value}')
+    # print(f'imei: {imei_value}')
+    # print(f'serial_number: {serial_number_value}')
+    # print(f'warranty_status: {warranty_status_value}')
+    # print(f'warranty_end_date: {warranty_end_date_value}')
+    # print(f'product_line_authorization: {product_line_authorization_value}')
 

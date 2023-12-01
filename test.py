@@ -1,7 +1,8 @@
 import requests
 import json
+import SKU_designation 
 
-url = "https://google.servicecentral.com/sctapi/device/1A121FDEE0072Z"
+url = "https://google.servicecentral.com/sctapi/device/352494113522964"
 
 payload = "{\"query\":\"\",\"variables\":{}}"
 headers = {
@@ -12,7 +13,7 @@ headers = {
 
 response = requests.request("GET", url, headers=headers, data=payload)
 
-print(response.text)
+# print(response.text)
 # Load the JSON data
 data = json.loads(response.text)
 
@@ -26,8 +27,12 @@ warranty_status_value = data['data']['device']['warranty_status']
 warranty_end_date_value = data['data']['device']['warranty_end_date']
 product_line_authorization_value = data['data']['device']['product_line_authorization']
 
+# Get product description for the given SKU
+result = SKU_designation.get_product_description(sku_value)
 
 # Print the SKU
+# Print product description if found
+print(result)
 print(f'sku: {sku_value}')
 print(f'product_line_id: {product_line_id_value}')
 print(f'product_line: {product_line_value}')
@@ -36,3 +41,4 @@ print(f'serial_number: {serial_number_value}')
 print(f'warranty_status: {warranty_status_value}')
 print(f'warranty_end_date: {warranty_end_date_value}')
 print(f'product_line_authorization: {product_line_authorization_value}')
+
