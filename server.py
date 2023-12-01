@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from warranty import get_current_warranty
 from warranty import is_valid_imei
 from waitress import serve
+from SKU_designation import get_product_description
 import json
 
 app = Flask(__name__)
