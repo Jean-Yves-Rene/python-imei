@@ -1,5 +1,6 @@
 import utils
 
+
 product_data = """
 GA00681-UK	PIXEL 4 BLACK 128GB CORE UK
 GA00681-US	PIXEL 4 BLACK 128GB FOREIGN (US)
