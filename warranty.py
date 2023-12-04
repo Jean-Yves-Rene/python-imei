@@ -15,6 +15,7 @@ route_2 = os.getenv('ROUTE_2')
 payload = "{\"query\":\"\",\"variables\":{}}"
 # Construct headers dictionary
 
+
 headers ={
     'x-api-key': api_key,
     'Cookie': f'ASP.NET_SessionId={session_id}; X-Oracle-BMC-LBS-Route={route_1}; X-Oracle-BMC-LBS-Route={route_2}',
@@ -92,4 +93,6 @@ if __name__ == "__main__":
     # print(f'warranty_status: {warranty_status_value}')
     # print(f'warranty_end_date: {warranty_end_date_value}')
     # print(f'product_line_authorization: {product_line_authorization_value}')
+
+
 
