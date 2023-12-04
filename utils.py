@@ -19,3 +19,4 @@ def create_product_dict(product_data):
             product_dict[sku].extend(info.split('\t'))
 
     return product_dict
+

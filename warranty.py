@@ -15,6 +15,7 @@ route_2 = os.getenv('ROUTE_2')
 payload = "{\"query\":\"\",\"variables\":{}}"
 # Construct headers dictionary
 
+
 headers ={
     'x-api-key': api_key,
     'Cookie': f'ASP.NET_SessionId={session_id}; X-Oracle-BMC-LBS-Route={route_1}; X-Oracle-BMC-LBS-Route={route_2}',
