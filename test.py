@@ -2,6 +2,7 @@ import requests
 import json
 import SKU_designation 
 
+
 url = "https://google.servicecentral.com/sctapi/device/352494113522964"
 
 payload = "{\"query\":\"\",\"variables\":{}}"
