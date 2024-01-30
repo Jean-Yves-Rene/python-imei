@@ -11,8 +11,17 @@
 <body>
     <h1>{{ imei_value }} Warranty Check Google</h1>
     <p>Description : <span class="red-text">{{ Description_value }}</span></p>
-    <p1><span class="red-text">If SKU is not found , does not end with 'GB' or 'UK' , except FOLD which can end
-            with 'US', DO NOT REPAIR & contact technical support</span></p1>
+    <p1>
+        <span class="red-text">
+            - If you encounter the below:
+            <ul>
+                <li> If SKU is not found (can be GAXXXXX-EU-RA if GAXXXXX sold in UK)</li>
+                <li> If SKU does not end with 'GB', 'UK', or 'EU-RA' (EU-RA= Refurb Unit)</li>
+                <li> Exception for FOLD Model: It can end with 'US'</li>
+            </ul>
+            DO NOT REPAIR & contact technical support
+        </span>
+    </p1>
     <br>
     <p>sku :{{ sku_value }}</p>
     <p>product_line_id :{{ product_line_id_value }}</p>
