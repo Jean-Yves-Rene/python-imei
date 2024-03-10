@@ -43,6 +43,10 @@ button:hover {
   color: red;
 }
 
+.amber-text {
+  color: red;
+} 
+
 .blue-text {
     color: blue;
 }
