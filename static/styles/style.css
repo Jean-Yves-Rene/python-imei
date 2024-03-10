@@ -44,8 +44,8 @@ button:hover {
 }
 
 .amber-text {
-  color: red;
-} 
+    color: amber; /* Use the actual color you want for amber */
+}
 
 .blue-text {
     color: blue;
