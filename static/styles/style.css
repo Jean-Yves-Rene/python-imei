@@ -1,42 +1,52 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    padding: 2rem;
-    background-color: #333;
-    color: whitesmoke;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-    font-size: 2rem;
+  padding: 2rem;
+  background-color: #333;
+  color: whitesmoke;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  font-size: 2rem;
 }
 
 /* Increase the width, height, and padding for the input */
 input {
-    width: 500px; /* Adjust the width as needed */
-    height: 60px; /* Adjust the height as needed */
-    padding: 10px; /* Adjust the padding as needed */
-    font-size: 3rem;
-    border-radius: 10px;
+  width: 500px; /* Adjust the width as needed */
+  height: 60px; /* Adjust the height as needed */
+  padding: 10px; /* Adjust the padding as needed */
+  font-size: 3rem;
+  border-radius: 10px;
 }
 
 button {
-    font-size: 2rem;
-    padding: 1.5rem 3rem;
-    border-radius: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
+  font-size: 2rem;
+  padding: 1.5rem 3rem;
+  border-radius: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
 button:hover {
-    background-color: #45a049;
+  background-color: #45a049;
 }
 
+.red-text {
+  color: red;
+}
 
+.orange-text {
+  color: orange; /* Use the actual color you want for amber */
+}
+
+.blue-text {
+  color: blue;
+}
