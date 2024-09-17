@@ -175,14 +175,14 @@ GA04988-GB	PIXEL 8A WHITE (PORCELAIN) 128GB CORE UK
 
 product_dict = utils.create_product_dict(product_data)
 
-def get_product_description(sku_value):
+def get_product_description(new_sku_value):
     # Check if SKU exists in the dictionary
-    if sku_value in product_dict:
+    if new_sku_value in product_dict:
         # Return the description associated with the SKU
-        return product_dict[sku_value]
+        return product_dict[new_sku_value]
     else:
         # Return a message if SKU is not found
-        return f"SKU {sku_value} not found."
+        return f"SKU {new_sku_value} not found."
 
 # get_product_description('GA02910-GB')
 # result = get_product_description('GA02910-GB')

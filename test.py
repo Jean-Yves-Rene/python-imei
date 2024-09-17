@@ -35,6 +35,7 @@ result = SKU_designation.get_product_description(sku_value)
 # Print product description if found
 print(result)
 print(f'sku: {sku_value}')
+print(sku_value[8:13])
 print(f'product_line_id: {product_line_id_value}')
 print(f'product_line: {product_line_value}')
 print(f'imei: {imei_value}')
