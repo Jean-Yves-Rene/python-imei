@@ -66,7 +66,10 @@ def get_warranty():
             )
         else:
             logging.error(f"Request failed with status code: {warranty_data.status_code}")
-            return render_template("error.html", error=f"Request failed with status code: {warranty_data.status_code}")
+            data = json.loads(warranty_data.text)
+            message = data.get("message", "No message available")
+            return render_template("error.html", error=f"Request failed with status code: {warranty_data.status_code}. Message: {message}")
+    
     except Exception as e:
         logging.error(f"An error occurred: {e}")
         return render_template("error.html", error="An unexpected error occurred while processing your request.")
