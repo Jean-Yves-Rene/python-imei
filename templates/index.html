@@ -42,6 +42,16 @@
             font-weight: bold;
             font-size: 1.5em;
         }
+
+        /* Christmas tree styling */
+        .snowman {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 500px;
+            height: auto;
+            z-index: 10;
+        }
     </style>
 </head>
 
@@ -52,9 +62,12 @@
 
     <form action="/warranty">
         <!-- Added pattern for a 15-digit IMEI, required attribute for validation -->
-        <input type="text" name="imei" id="imei" placeholder="Enter an IMEI" pattern="\d{15}" required />
+        <input type="text" name="imei" id="imei" placeholder="Enter an IMEI" pattern="\d{15}" required
+            title="Enter a valid 15-digit IMEI number" />
         <button type="submit">Submit</button>
     </form>
+    <!-- Christmas tree image -->
+    <img src="{{ url_for('static', filename='images/snowman.png') }}" alt="snowman" class="snowman" />
 </body>
 
 </html>

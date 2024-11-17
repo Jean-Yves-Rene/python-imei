@@ -6,7 +6,7 @@
 
 body {
   padding: 2rem;
-  background-color: rgb(40, 38, 38);
+  background-color: rgb(11, 11, 11);
   color: whitesmoke;
   min-height: 100vh;
   display: flex;
@@ -36,7 +36,7 @@ button {
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: blue;
 }
 
 .red-text {
