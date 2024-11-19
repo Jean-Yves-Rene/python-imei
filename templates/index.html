@@ -1,73 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IMEI Check Warranty</title>
-    <link href="{{ url_for('static', filename='styles/style.css') }}" rel="stylesheet" />
-    <style>
-        .google-logo span:nth-child(1) {
-            color: #4285F4;
-        }
+{% block content %}
+<h1>IMEI Check Warranty <span class="google-logo">
+        <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+    </span></h1>
 
-        /* G - Blue */
-        .google-logo span:nth-child(2) {
-            color: #EA4335;
-        }
-
-        /* o - Red */
-        .google-logo span:nth-child(3) {
-            color: #FBBC05;
-        }
-
-        /* o - Yellow */
-        .google-logo span:nth-child(4) {
-            color: #4285F4;
-        }
-
-        /* g - Blue */
-        .google-logo span:nth-child(5) {
-            color: #34A853;
-        }
-
-        /* l - Green */
-        .google-logo span:nth-child(6) {
-            color: #EA4335;
-        }
-
-        /* e - Red */
-        .google-logo {
-            font-family: Arial, sans-serif;
-            font-weight: bold;
-            font-size: 1.5em;
-        }
-
-        /* Christmas tree styling */
-        .snowman {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            width: 500px;
-            height: auto;
-            z-index: 10;
-        }
-    </style>
-</head>
-
-<body>
-    <h1>IMEI Check Warranty <span class="google-logo">
-            <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
-        </span></h1>
-
-    <form action="/warranty">
-        <!-- Added pattern for a 15-digit IMEI, required attribute for validation -->
-        <input type="text" name="imei" id="imei" placeholder="Enter an IMEI" pattern="\d{15}" required
-            title="Enter a valid 15-digit IMEI number" />
-        <button type="submit">Submit</button>
-    </form>
-    <!-- Christmas tree image -->
-    <img src="{{ url_for('static', filename='images/snowman.png') }}" alt="snowman" class="snowman" />
-</body>
-
-</html>
+<form action="/warranty">
+    <!-- Added pattern for a 15-digit IMEI -->
+    <input type="text" name="imei" id="imei" placeholder="Enter an IMEI" pattern="\d{15}" required
+        title="Enter a valid 15-digit IMEI number" />
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}

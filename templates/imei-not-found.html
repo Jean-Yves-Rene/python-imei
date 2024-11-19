@@ -1,20 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imei Not Found</title>
-    <link href="{{ url_for('static', filename='styles/style.css') }}" rel="stylesheet" />
-</head>
+{% block content %}
 
-<body>
-    <h1>IMEI Not Correct</h1>
-    <h2>Try Again?</h2>
-    <form action="/warranty">
-        <input type="text" name="imei" id="imei" placeholder="Enter an IMEI" />
-        <button type="submit">Submit</button>
-    </form>
-</body>
+<h1>IMEI Not Correct</h1>
+<h2>Try Again?</h2>
+<form action="/warranty">
+    <input type="text" name="imei" id="imei" placeholder="Enter an IMEI" />
+    <button type="submit">Submit</button>
+</form>
 
-</html>
+{% endblock %}

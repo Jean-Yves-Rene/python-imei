@@ -1,64 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ imei_value }} Warranty</title>
-    <link href="{{ url_for('static', filename='styles/style.css') }}" rel="stylesheet" />
-</head>
+{% block content %}
+<h1>{{ imei_value }} Warranty Check </h1>
+<p>Description : <span class="red-text">{{ Description_value }}</span></p>
+<p1>
+    <span class="red-text">
+        - If you encounter the below:
+        <ul>
+            <li> If SKU is not found (can be GAXXXXX-GB-RA or GAXXXXX-EU-RA or GAXXXXX-FR-RA if GAXXXXX sold in UK)
+            </li>
+            <li> If SKU does not end with 'GB', 'UK' , 'FR', or 'GB-RA' , 'UK-RA' , 'FR-RA' (RA= Refurb Unit)</li>
+            <li> Exception for FOLD Model: It can end with 'US'</li>
+        </ul>
+        DO NOT REPAIR & contact technical support
+    </span>
+    <span class="orange-text">
+        <ul>
+            <li> Update 10/03/2024 : we can repair SKU ending with FR</li>
+        </ul>
+    </span>
+    <span class="orange-text">
+        <ul>
+            <li> Update 20/09/2024 : If SKU starts with CLNRGXXXXXX & is not found : contact technical support to
+                check on Master
+                File if IW or OOW
+            </li>
+        </ul>
+    </span>
+    <span class="orange-text">
+        <ul>
+            <li> Update 03/07/2024 : we cannot repair SKU ending with -N : they are dummy units so OOW</li>
+        </ul>
+    </span>
+</p1>
+<br>
 
-<body>
-    <h1>{{ imei_value }} Warranty Check </h1>
-    <p>Description : <span class="red-text">{{ Description_value }}</span></p>
-    <p1>
-        <span class="red-text">
-            - If you encounter the below:
-            <ul>
-                <li> If SKU is not found (can be GAXXXXX-GB-RA or GAXXXXX-EU-RA or GAXXXXX-FR-RA if GAXXXXX sold in UK)
-                </li>
-                <li> If SKU does not end with 'GB', 'UK' , 'FR', or 'GB-RA' , 'UK-RA' , 'FR-RA' (RA= Refurb Unit)</li>
-                <li> Exception for FOLD Model: It can end with 'US'</li>
-            </ul>
-            DO NOT REPAIR & contact technical support
-        </span>
-        <span class="orange-text">
-            <ul>
-                <li> Update 10/03/2024 : we can repair SKU ending with FR</li>
-            </ul>
-        </span>
-        <span class="orange-text">
-            <ul>
-                <li> Update 20/09/2024 : If SKU starts with CLNRGXXXXXX & is not found : contact technical support to
-                    check on Master
-                    File if IW or OOW
-                </li>
-            </ul>
-        </span>
-        <span class="orange-text">
-            <ul>
-                <li> Update 03/07/2024 : we cannot repair SKU ending with -N : they are dummy units so OOW</li>
-            </ul>
-        </span>
-    </p1>
-    <br>
+<p>SKU: {{ sku_value }}</p>
+<p>Product Line ID: {{ product_line_id_value }}</p>
+<p>Product Line: {{ product_line_value }}</p>
+<p>IMEI: {{ imei_value }}</p>
+<p>Serial Number: {{ serial_number_value }}</p>
+<p>Warranty Status: {{ warranty_status_value }}</p>
+<p>Warranty End Date: {{ warranty_end_date_value }}</p>
+<p>Product Line Authorization: {{ product_line_authorization_value }}</p>
+{% if note_text %}
+<p style="color: red;">Note: {{ note_text }}</p>
+{% endif %}
 
-    <p>SKU: {{ sku_value }}</p>
-    <p>Product Line ID: {{ product_line_id_value }}</p>
-    <p>Product Line: {{ product_line_value }}</p>
-    <p>IMEI: {{ imei_value }}</p>
-    <p>Serial Number: {{ serial_number_value }}</p>
-    <p>Warranty Status: {{ warranty_status_value }}</p>
-    <p>Warranty End Date: {{ warranty_end_date_value }}</p>
-    <p>Product Line Authorization: {{ product_line_authorization_value }}</p>
-    {% if note_text %}
-    <p style="color: red;">Note: {{ note_text }}</p>
-    {% endif %}
-
-    <form action="/warranty">
-        <input type="text" name="imei" id="imei" placeholder="Enter an IMEI" required />
-        <button type="submit">Submit</button>
-    </form>
-</body>
-
-</html>
+<form action="/warranty">
+    <input type="text" name="imei" id="imei" placeholder="Enter an IMEI" required />
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}
