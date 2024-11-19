@@ -20,6 +20,51 @@ body {
   animation: fadeIn 1s ease forwards;
 }
 
+/* Error Page Styling */
+body.error-page {
+  font-family: Arial, sans-serif;
+  background-color: rgb(11, 11, 11);
+  color: #721c24;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.error-container {
+  text-align: center;
+  background-color: #f8d7da;
+  padding: 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.error-container h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.error-container p {
+  font-size: 1.8rem; /* Increased size for error message */
+  margin-bottom: 20px;
+}
+
+.error-container a {
+  text-decoration: none;
+  color: #004085;
+  padding: 10px 15px;
+  border: 1px solid #004085;
+  border-radius: 3px;
+  background-color: #cce5ff;
+  transition: background-color 0.3s;
+}
+
+.error-container a:hover {
+  background-color: #004085;
+  color: white;
+}
+
 /* Form Input Styling */
 input {
   width: 500px;

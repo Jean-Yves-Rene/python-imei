@@ -43,6 +43,8 @@ def get_warranty():
             # Ensure the sku_value is long enough before slicing
             if len(sku_value) >= 13 and sku_value[8:13] == "EU-RA":
                 new_sku_value = sku_value.replace("EU-RA", "GB")
+            elif len(sku_value) >= 13 and sku_value[8:13] == "GB-RA":
+                new_sku_value = sku_value.replace("GB-RA", "GB")
             else:
                 new_sku_value = sku_value
 
