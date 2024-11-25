@@ -1,57 +1,140 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from functools import wraps
 from warranty import get_current_warranty, is_valid_imei
 from waitress import serve
 from SKU_designation import get_product_description
-import json
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from datetime import timedelta
 import logging
+import os
+import bcrypt
+import json
 
 app = Flask(__name__)
+
+# Configure Flask-Limiter
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"]  # Global rate limits
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-@app.route('/')
-@app.route('/index')
-def index():
-    return render_template('index.html')
+# Environment variables for credentials
+usernamestored = os.getenv('USERNAMELOGIN')
+stored_hashed_password = os.getenv('PASSWORDHASHED')  # Securely hashed password
 
+# Secret key for session management
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'mysecretkey')
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)  # 5-minute session timeout
+
+
+# Login decorator to protect routes
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            return redirect(url_for('login'))  # Redirect to login if session expired
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.after_request
+def add_no_cache_headers(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+# Rate limit error handler
+@app.errorhandler(429)
+def ratelimit_error(e):
+    return jsonify(error="Too many requests. Please try again later."), 429
+
+
+# Home route
+@app.route('/')
+def home():
+    return redirect(url_for('login'))  # Redirect to login
+
+
+# Login route with rate limiting
+@app.route('/login', methods=['GET', 'POST'])
+@limiter.limit("5 per minute")  # Specific rate limit for login
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        print(username)
+        print(password)
+
+        if not stored_hashed_password:
+            logging.error("Environment variable 'PASSWORDHASHED' is not set.")
+            return "Server misconfiguration. Please contact the administrator.", 500
+
+        # Validate credentials
+        try:
+            if username == usernamestored and bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
+                session['username'] = username
+                session.permanent = True  # Enable session timeout
+                logging.info(f"User {username} logged in successfully.")
+                return redirect(url_for('dashboard'))
+            else:
+                logging.warning(f"Failed login attempt for username: {username}")
+                return render_template('error.html', error="Invalid credentials.")
+        except Exception as e:
+            logging.error(f"Login error: {e}")
+            return "An error occurred during login. Please try again later.", 500
+
+    return render_template('login.html')
+
+
+# Logout route
+@app.route('/logout')
+@login_required
+def logout():
+    session.pop('username', None)
+    logging.info("User logged out.")
+    return redirect(url_for('login'))
+
+
+# Dashboard route
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('index.html', username=session['username'])
+
+
+# Warranty route
 @app.route('/warranty')
-def get_warranty():
+@login_required
+def warranty():
     imei = request.args.get('imei')
-    
-    if not is_valid_imei(imei):
-        return render_template("imei-not-found.html")
 
     try:
-        # Fetch warranty data
         warranty_data = get_current_warranty(imei)
 
-        # Check if the request was successful
         if warranty_data.status_code == 200:
             data = json.loads(warranty_data.text)
-            
+
             if not data.get('success', True):
                 return render_template('imei-not-found.html')
 
             device_data = data.get('data', {}).get('device', {})
-
             if not device_data:
                 return render_template('imei-not-found.html')
 
             sku_value = device_data.get('sku', 'N/A')
+            if len(sku_value) >= 13:
+                if "EU-RA" in sku_value:
+                    sku_value = sku_value.replace("EU-RA", "GB")
+                elif "GB-RA" in sku_value:
+                    sku_value = sku_value.replace("GB-RA", "GB")
 
-            # Ensure the sku_value is long enough before slicing
-            if len(sku_value) >= 13 and sku_value[8:13] == "EU-RA":
-                new_sku_value = sku_value.replace("EU-RA", "GB")
-            elif len(sku_value) >= 13 and sku_value[8:13] == "GB-RA":
-                new_sku_value = sku_value.replace("GB-RA", "GB")
-            else:
-                new_sku_value = sku_value
-
-            result = get_product_description(new_sku_value)
-
-            notes = device_data.get('notes', [])
-            note_text = notes[0].get('note_text', 'No notes available') if notes else 'No notes available'
+            result = get_product_description(sku_value)
+            notes = device_data.get('notes', [{'note_text': 'No notes available'}])
 
             return render_template(
                 "warranty.html",
@@ -64,17 +147,18 @@ def get_warranty():
                 warranty_status_value=device_data.get('warranty_status', 'N/A'),
                 warranty_end_date_value=device_data.get('warranty_end_date', 'N/A'),
                 product_line_authorization_value=device_data.get('product_line_authorization', 'N/A'),
-                note_text=note_text,
+                note_text=notes[0].get('note_text'),
             )
         else:
-            logging.error(f"Request failed with status code: {warranty_data.status_code}")
+            logging.error(f"Warranty request failed with status code: {warranty_data.status_code}")
             data = json.loads(warranty_data.text)
             message = data.get("message", "No message available")
             return render_template("error.html", error=f"Request failed with status code: {warranty_data.status_code}. Message: {message}")
-    
+            #return render_template("error.html", error="Failed to fetch warranty data.")
     except Exception as e:
-        logging.error(f"An error occurred: {e}")
-        return render_template("error.html", error="An unexpected error occurred while processing your request.")
+        logging.error(f"An error occurred in /warranty: {e}")
+        return render_template("error.html", error="An unexpected error occurred.")
+
 
 if __name__ == "__main__":
     serve(app, host="0.0.0.0", port=8000)
