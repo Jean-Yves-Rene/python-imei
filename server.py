@@ -59,6 +59,16 @@ def ratelimit_error(e):
 def home():
     return redirect(url_for('login'))  # Redirect to login
 
+@app.route('/handle_error')
+def handle_error():
+    error = request.args.get('error', '')
+
+    if error == "Invalid credentials.":
+        # Redirect to login
+        return redirect(url_for('login'))
+    else:
+        # Redirect to dashboard
+        return redirect(url_for('dashboard'))
 
 # Login route with rate limiting
 @app.route('/login', methods=['GET', 'POST'])
