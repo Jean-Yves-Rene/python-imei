@@ -13,12 +13,12 @@ import json
 
 app = Flask(__name__)
 
-# Configure Flask-Limiter
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["200 per day", "50 per hour"]  # Global rate limits
-)
+# # Configure Flask-Limiter
+# limiter = Limiter(
+#     get_remote_address,
+#     app=app,
+#     default_limits=["200 per day", "50 per hour"]  # Global rate limits
+# )
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -62,14 +62,12 @@ def home():
 
 # Login route with rate limiting
 @app.route('/login', methods=['GET', 'POST'])
-@limiter.limit("5 per minute")  # Specific rate limit for login
+#@limiter.limit("5 per minute")  # Specific rate limit for login
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        print(username)
-        print(password)
-
+       
         if not stored_hashed_password:
             logging.error("Environment variable 'PASSWORDHASHED' is not set.")
             return "Server misconfiguration. Please contact the administrator.", 500
