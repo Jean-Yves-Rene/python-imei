@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 from functools import wraps
 from warranty import get_current_warranty, is_valid_imei
 from waitress import serve
@@ -103,6 +103,7 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    session.clear()  # Clear the entire session
     session.pop('username', None)
     logging.info("User logged out.")
     return redirect(url_for('login'))
@@ -112,13 +113,21 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('index.html', username=session['username'])
-
+    username = session.get('username')  # Get username from session
+    if not username:
+        flash("Session expired. Please log in again.", "danger")
+        return redirect(url_for('login'))
+    else:
+        return render_template('index.html', username=session['username'])
 
 # Warranty route
 @app.route('/warranty')
 @login_required
 def warranty():
+    username = session.get('username')  # Get username from session
+    if not username:
+        flash("Session expired. Please log in again.", "danger")
+        return redirect(url_for('login'))
     imei = request.args.get('imei')
 
     try:
@@ -167,6 +176,12 @@ def warranty():
         logging.error(f"An error occurred in /warranty: {e}")
         return render_template("error.html", error="An unexpected error occurred.")
 
+@app.after_request
+def add_no_cache_headers(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 if __name__ == "__main__":
     serve(app, host="0.0.0.0", port=8000)

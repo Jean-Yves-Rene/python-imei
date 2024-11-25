@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
+<h1>Welcome, {{ username }}!</h1>
+<p>This is your dashboard.</p>
+<a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
 <h1>IMEI Check Warranty <span class="google-logo">
         <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
     </span></h1>
 
-    <form action="/warranty" method="GET" onsubmit="return validateIMEI()">
+<form action="/warranty" method="GET" onsubmit="return validateIMEI()">
     <!-- Added pattern for a 15-digit IMEI -->
     <input type="text" name="imei" id="imei" placeholder="Enter an IMEI" pattern="\d{15}" required
         title="Enter a valid 15-digit IMEI number" />
