@@ -53,22 +53,20 @@ def add_no_cache_headers(response):
 def ratelimit_error(e):
     return jsonify(error="Too many requests. Please try again later."), 429
 
+@app.errorhandler(400)
+def internal_server_error(e):
+    # note that we set the 500 status explicitly
+    return render_template('index.html'), 400
+
+@app.errorhandler(404)
+def internal_server_error(e):
+    # note that we set the 500 status explicitly
+    return render_template('index.html'), 404
 
 # Home route
 @app.route('/')
 def home():
     return redirect(url_for('login'))  # Redirect to login
-
-@app.route('/handle_error')
-def handle_error():
-    error = request.args.get('error', '')
-
-    if error == "Invalid credentials.":
-        # Redirect to login
-        return redirect(url_for('login'))
-    else:
-        # Redirect to dashboard
-        return redirect(url_for('dashboard'))
 
 # Login route with rate limiting
 @app.route('/login', methods=['GET', 'POST'])
@@ -91,13 +89,12 @@ def login():
                 return redirect(url_for('dashboard'))
             else:
                 logging.warning(f"Failed login attempt for username: {username}")
-                return render_template('error.html', error="Invalid credentials.")
+                return render_template('errorlogin.html', error="Invalid credentials.")
         except Exception as e:
             logging.error(f"Login error: {e}")
             return "An error occurred during login. Please try again later.", 500
 
     return render_template('login.html')
-
 
 # Logout route
 @app.route('/logout')
@@ -107,7 +104,6 @@ def logout():
     session.pop('username', None)
     logging.info("User logged out.")
     return redirect(url_for('login'))
-
 
 # Dashboard route
 @app.route('/dashboard')
@@ -170,11 +166,11 @@ def warranty():
             logging.error(f"Warranty request failed with status code: {warranty_data.status_code}")
             data = json.loads(warranty_data.text)
             message = data.get("message", "No message available")
-            return render_template("error.html", error=f"Request failed with status code: {warranty_data.status_code}. Message: {message}")
-            #return render_template("error.html", error="Failed to fetch warranty data.")
+            return render_template("errordatanotfound.html", error=f"Request failed with status code: {warranty_data.status_code}. Message: {message}")
+            
     except Exception as e:
         logging.error(f"An error occurred in /warranty: {e}")
-        return render_template("error.html", error="An unexpected error occurred.")
+        return render_template("errordatanotfound.html", error="An unexpected error occurred.")
 
 @app.after_request
 def add_no_cache_headers(response):
