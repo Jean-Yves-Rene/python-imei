@@ -6,6 +6,9 @@ from SKU_designation import get_product_description
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from datetime import timedelta
+from datetime import datetime
+from pymongo import MongoClient
+import pymongo
 import logging
 import os
 import bcrypt
@@ -23,6 +26,9 @@ app = Flask(__name__)
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
+MONGODB_USERNAME = os.getenv("MONGODB_USERNAME")
+MONGODB_PASSWORD = os.getenv("MONGODB_PASSWORD")
+
 # Environment variables for credentials
 usernamestored = os.getenv('USERNAMELOGIN')
 stored_hashed_password = os.getenv('PASSWORDHASHED')  # Securely hashed password
@@ -31,6 +37,29 @@ stored_hashed_password = os.getenv('PASSWORDHASHED')  # Securely hashed password
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'mysecretkey')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)  # 5-minute session timeout
 
+# Use credentials to connect to MongoDB
+uri = f"mongodb+srv://{MONGODB_USERNAME}:{MONGODB_PASSWORD}@cluster0.zvtjbni.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+client = MongoClient(uri)
+
+db = client["Google"]  # Replace "your_database_name" with your actual database name
+collection = db["ImeiWarrantyCheck"]  # Replace "your_collection_name" with your actual collection name
+
+try:
+    # Connect to MongoDB
+    #client = pymongo.MongoClient(uri)
+
+    # Check if connection is successful
+    db_names = client.list_database_names()
+    print("Connected to MongoDB")
+    print("Available databases:")
+    for db_name in db_names:
+        print(db_name)
+
+except pymongo.errors.ConnectionFailure as e:
+    print("Could not connect to MongoDB:", e)
+# Function to get current date and time
+def get_current_date():
+    return datetime.now()
 
 # Login decorator to protect routes
 def login_required(f):
@@ -145,8 +174,22 @@ def warranty():
                     sku_value = sku_value.replace("EU-RA", "GB")
                 elif "GB-RA" in sku_value:
                     sku_value = sku_value.replace("GB-RA", "GB")
-
+            # Insert IMEI into MongoDB collection
             result = get_product_description(sku_value)
+            print(result)
+            if isinstance(result, list) and len(result) == 1:
+                result = result[0]  # Extract the single value
+            # Add current date to the data
+            current_date = get_current_date().strftime("%Y-%m-%dT%H:%M")
+            data = {
+                "imei": imei,
+                "sku_value": sku_value,
+                "designation": result,
+                "date_added": current_date  # Add date field,
+                }
+            collection.insert_one(data)
+            print(imei)
+
             notes = device_data.get('notes', [{'note_text': 'No notes available'}])
 
             return render_template(
@@ -167,10 +210,9 @@ def warranty():
             data = json.loads(warranty_data.text)
             message = data.get("message", "No message available")
             return render_template("errordatanotfound.html", error=f"Request failed with status code: {warranty_data.status_code}. Message: {message}")
-            
     except Exception as e:
-        logging.error(f"An error occurred in /warranty: {e}")
-        return render_template("errordatanotfound.html", error="An unexpected error occurred.")
+            logging.error(f"An error occurred in /warranty: {e}")
+            return render_template("errordatanotfound.html", error="An unexpected error occurred.")
 
 @app.after_request
 def add_no_cache_headers(response):
