@@ -53,16 +53,22 @@ try:
     client = MongoClient(uri)
     # Check if connection is successful
     db_names = client.list_database_names()
+    print("Connected to MongoDB")
+    print("Available databases:")
+    for db_name in db_names:
+        print(db_name)
 except ConnectionFailure as e:
     print("Could not connect to MongoDB:", e)
     client = None
 
 collection = None
+
 if client:
     db = client["local"]  # Replace with your actual database name
     collection = db["Google_Warranty_Check"]  # Replace with your actual collection name
 else:
     collection = None # Ensure collection is None if client isn't connected
+    logging.error("MongoDB client or collection is not initialized.")
 
 # Function to get current date and time
 def get_current_date():
@@ -195,13 +201,16 @@ def warranty():
                 "designation": result,
                 "date_added": current_date  # Add date field,
                 }
-            try:
-                collection.insert_one(data)
-                logging.info(f"Inserted IMEI data into MongoDB: {data}")
-            except Exception as db_error:
-                logging.error(f"Error inserting data into MongoDB: {db_error}")
-                return render_template("errordatanotfound.html", error="Database insertion failed.")
-
+            if client is not None and collection is not None:
+                try:
+                    collection.insert_one(data)
+                    logging.info(f"Inserted IMEI data into MongoDB: {data}")
+                except Exception as db_error:
+                    logging.error(f"Error inserting data into MongoDB: {db_error}")
+                    return render_template("errordatanotfound.html", error="Database insertion failed.")
+            else:
+                return render_template("error.html", error="MongoDB client is not connected.")
+        
             notes = device_data.get('notes', [{'note_text': 'No notes available'}])
 
             return render_template(
