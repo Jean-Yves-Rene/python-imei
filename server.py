@@ -164,7 +164,8 @@ def warranty():
 
     try:
         warranty_data = get_current_warranty(imei)
-
+        logging.info(f"Warranty API response: {warranty_data.status_code} - {warranty_data.text}")
+         
         if warranty_data.status_code == 200:
             data = json.loads(warranty_data.text)
 
@@ -194,8 +195,12 @@ def warranty():
                 "designation": result,
                 "date_added": current_date  # Add date field,
                 }
-            collection.insert_one(data)
-            print(imei)
+            try:
+                collection.insert_one(data)
+                logging.info(f"Inserted IMEI data into MongoDB: {data}")
+            except Exception as db_error:
+                logging.error(f"Error inserting data into MongoDB: {db_error}")
+                return render_template("errordatanotfound.html", error="Database insertion failed.")
 
             notes = device_data.get('notes', [{'note_text': 'No notes available'}])
 
@@ -212,7 +217,7 @@ def warranty():
                 product_line_authorization_value=device_data.get('product_line_authorization', 'N/A'),
                 note_text=notes[0].get('note_text'),
             )
-        else:
+        elif warranty_data.status_code == 400 or warranty_data.status_code == 404 :
             logging.error(f"Warranty request failed with status code: {warranty_data.status_code}")
             data = json.loads(warranty_data.text)
             message = data.get("message", "No message available")
