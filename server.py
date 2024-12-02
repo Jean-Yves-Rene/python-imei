@@ -47,17 +47,12 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)  # 5-minute ses
 
 # Construct the MongoDB URI using the loaded environment variables
 uri = f"mongodb://{mongodb_username}:{mongodb_password}@{mongodb_ip}/?authSource={mongodb_auth_source}"
-print(uri)
 client = None
 
 try:
     client = MongoClient(uri)
     # Check if connection is successful
     db_names = client.list_database_names()
-    print("Connected to MongoDB")
-    print("Available databases:")
-    for db_name in db_names:
-        print(db_name)
 except ConnectionFailure as e:
     print("Could not connect to MongoDB:", e)
     client = None
@@ -126,7 +121,6 @@ def login():
             if username == usernamestored and bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
                 session['username'] = username
                 session.permanent = True  # Enable session timeout
-                logging.info(f"User {username} logged in successfully.")
                 return redirect(url_for('dashboard'))
             else:
                 logging.warning(f"Failed login attempt for username: {username}")
