@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>Error</title>
+{% endblock %}
+
+{% block content %}
+
+<body class="error-page">
+    <div class="error-container">
+        <h1>Error</h1>
+        <p>{{ error }}</p>
+        <a href="{{ url_for('dashboard') }}">Click here to go back to the dashboard page</a>
+    </div>
+    <script>
+        // Redirect automatically after 3 seconds
+        setTimeout(function () {
+            window.location.href = "{{ url_for('dashboard') }}";
+        }, 3000);
+    </script>
+</body>
+{% endblock %}
