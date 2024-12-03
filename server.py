@@ -158,6 +158,15 @@ def warranty():
             return render_template("errordatanotfound.html", error=f"Request failed with status code: {warranty_data.status_code}. Message: {message}")
     except Exception as e:
             logging.error(f"An error occurred in /warranty: {e}")
+            current_date = get_current_date().strftime("%Y-%m-%dT%H:%M")
+            error_entry = {
+                "imei": imei,
+                "sku_value": "N/A",
+                "designation": "Error Occurred",
+                "date_added": current_date,
+                "status_code": 500,
+            }
+            collection.insert_one(error_entry)
             return render_template("errordatanotfound.html", error="An unexpected error occurred.")
 
 @app.after_request
