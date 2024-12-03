@@ -35,28 +35,15 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)  # 5-minute ses
 
 # Construct the MongoDB URI using the loaded environment variables
 uri = f"mongodb://{mongodb_username}:{mongodb_password}@{mongodb_ip}/?authSource={mongodb_auth_source}"
-client = None
 
-try:
-    client = MongoClient(uri)
-    # Check if connection is successful
-    db_names = client.list_database_names()
-    print("Connected to MongoDB")
-    print("Available databases:")
-    for db_name in db_names:
-        print(db_name)
-except ConnectionFailure as e:
-    print("Could not connect to MongoDB:", e)
-    client = None
+# Initialize MongoClient once for the application
+mongo_client = MongoClient(uri)
+db = mongo_client["local"]  # Replace with your database name
+collection = db["Google_Warranty_Check"]  # Replace "your_collection_name" with your actual collection name
 
-collection = None
-
-if client:
-    db = client["local"]  # Replace with your actual database name
-    collection = db["Google_Warranty_Check"]  # Replace with your actual collection name
-else:
-    collection = None # Ensure collection is None if client isn't connected
-    logging.error("MongoDB client or collection is not initialized.")
+# Function to get current date and time
+def get_current_date():
+    return datetime.now()
 
 # Function to get current date and time
 def get_current_date():
@@ -102,6 +89,15 @@ def warranty():
             data = json.loads(warranty_data.text)
 
             if not data.get('success', True):
+                # Record IMEI with no data found
+                current_date = get_current_date().strftime("%Y-%m-%dT%H:%M")
+                no_data_entry = {
+                    "imei": imei,
+                    "sku_value": "N/A",
+                    "designation": "No Data Found",
+                    "date_added": current_date,
+                }
+                collection.insert_one(no_data_entry)
                 return render_template('imei-not-found.html')
 
             device_data = data.get('data', {}).get('device', {})
@@ -127,15 +123,8 @@ def warranty():
                 "designation": result,
                 "date_added": current_date  # Add date field,
                 }
-            if client is not None and collection is not None:
-                try:
-                    collection.insert_one(data)
-                    logging.info(f"Inserted IMEI data into MongoDB: {data}")
-                except Exception as db_error:
-                    logging.error(f"Error inserting data into MongoDB: {db_error}")
-                    return render_template("errordatanotfound.html", error="Database insertion failed.")
-            else:
-                return render_template("error.html", error="MongoDB client is not connected.")
+            collection.insert_one(data)
+            print(imei)
         
             notes = device_data.get('notes', [{'note_text': 'No notes available'}])
 
@@ -152,13 +141,31 @@ def warranty():
                 product_line_authorization_value=device_data.get('product_line_authorization', 'N/A'),
                 note_text=notes[0].get('note_text'),
             )
-        elif warranty_data.status_code == 400 or warranty_data.status_code == 404 :
+        else:
             logging.error(f"Warranty request failed with status code: {warranty_data.status_code}")
             data = json.loads(warranty_data.text)
             message = data.get("message", "No message available")
+            current_date = get_current_date().strftime("%Y-%m-%dT%H:%M")
+            error_entry = {
+                "imei": imei,
+                "sku_value": "N/A",
+                "designation": "Not Found or Invalid",
+                "date_added": current_date,
+                "status_code": warranty_data.status_code,
+            }
+            collection.insert_one(error_entry)
             return render_template("errordatanotfound.html", error=f"Request failed with status code: {warranty_data.status_code}. Message: {message}")
     except Exception as e:
             logging.error(f"An error occurred in /warranty: {e}")
+            current_date = get_current_date().strftime("%Y-%m-%dT%H:%M")
+            error_entry = {
+                "imei": imei,
+                "sku_value": "N/A",
+                "designation": "Error Occurred",
+                "date_added": current_date,
+                "status_code": 500,
+            }
+            collection.insert_one(error_entry)
             return render_template("errordatanotfound.html", error="An unexpected error occurred.")
 
 @app.after_request
