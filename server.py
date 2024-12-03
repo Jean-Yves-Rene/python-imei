@@ -16,22 +16,11 @@ import json
 
 app = Flask(__name__)
 
-# # Configure Flask-Limiter
-# limiter = Limiter(
-#     get_remote_address,
-#     app=app,
-#     default_limits=["200 per day", "50 per hour"]  # Global rate limits
-# )
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 MONGODB_USERNAME = os.getenv("MONGODB_USERNAME")
 MONGODB_PASSWORD = os.getenv("MONGODB_PASSWORD")
-
-# Environment variables for credentials
-usernamestored = os.getenv('USERNAMELOGIN')
-stored_hashed_password = os.getenv('PASSWORDHASHED')  # Securely hashed password
 
 # Secret key for session management
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'mysecretkey')
@@ -61,15 +50,6 @@ except pymongo.errors.ConnectionFailure as e:
 def get_current_date():
     return datetime.now()
 
-# Login decorator to protect routes
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'username' not in session:
-            return redirect(url_for('login'))  # Redirect to login if session expired
-        return f(*args, **kwargs)
-    return decorated_function
-
 @app.after_request
 def add_no_cache_headers(response):
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0"
@@ -95,64 +75,11 @@ def internal_server_error(e):
 # Home route
 @app.route('/')
 def home():
-    return redirect(url_for('login'))  # Redirect to login
-
-# Login route with rate limiting
-@app.route('/login', methods=['GET', 'POST'])
-#@limiter.limit("5 per minute")  # Specific rate limit for login
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-       
-        if not stored_hashed_password:
-            logging.error("Environment variable 'PASSWORDHASHED' is not set.")
-            return "Server misconfiguration. Please contact the administrator.", 500
-
-        # Validate credentials
-        try:
-            if username == usernamestored and bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
-                session['username'] = username
-                session.permanent = True  # Enable session timeout
-                logging.info(f"User {username} logged in successfully.")
-                return redirect(url_for('dashboard'))
-            else:
-                logging.warning(f"Failed login attempt for username: {username}")
-                return render_template('errorlogin.html', error="Invalid credentials.")
-        except Exception as e:
-            logging.error(f"Login error: {e}")
-            return "An error occurred during login. Please try again later.", 500
-
-    return render_template('login.html')
-
-# Logout route
-@app.route('/logout')
-@login_required
-def logout():
-    session.clear()  # Clear the entire session
-    session.pop('username', None)
-    logging.info("User logged out.")
-    return redirect(url_for('login'))
-
-# Dashboard route
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    username = session.get('username')  # Get username from session
-    if not username:
-        flash("Session expired. Please log in again.", "danger")
-        return redirect(url_for('login'))
-    else:
-        return render_template('index.html', username=session['username'])
+    return render_template('index.html')
 
 # Warranty route
 @app.route('/warranty')
-@login_required
 def warranty():
-    username = session.get('username')  # Get username from session
-    if not username:
-        flash("Session expired. Please log in again.", "danger")
-        return redirect(url_for('login'))
     imei = request.args.get('imei')
 
     try:
@@ -162,6 +89,15 @@ def warranty():
             data = json.loads(warranty_data.text)
 
             if not data.get('success', True):
+                # Record IMEI with no data found
+                current_date = get_current_date().strftime("%Y-%m-%dT%H:%M")
+                no_data_entry = {
+                    "imei": imei,
+                    "sku_value": "N/A",
+                    "designation": "No Data Found",
+                    "date_added": current_date,
+                }
+                collection.insert_one(no_data_entry)
                 return render_template('imei-not-found.html')
 
             device_data = data.get('data', {}).get('device', {})
@@ -205,10 +141,20 @@ def warranty():
                 product_line_authorization_value=device_data.get('product_line_authorization', 'N/A'),
                 note_text=notes[0].get('note_text'),
             )
+        
         else:
             logging.error(f"Warranty request failed with status code: {warranty_data.status_code}")
             data = json.loads(warranty_data.text)
             message = data.get("message", "No message available")
+            current_date = get_current_date().strftime("%Y-%m-%dT%H:%M")
+            error_entry = {
+                "imei": imei,
+                "sku_value": "N/A",
+                "designation": "Not Found or Invalid",
+                "date_added": current_date,
+                "status_code": warranty_data.status_code,
+            }
+            collection.insert_one(error_entry)
             return render_template("errordatanotfound.html", error=f"Request failed with status code: {warranty_data.status_code}. Message: {message}")
     except Exception as e:
             logging.error(f"An error occurred in /warranty: {e}")
