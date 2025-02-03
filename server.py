@@ -111,6 +111,9 @@ def warranty():
                 elif "GB-RA" in sku_value:
                     sku_value = sku_value.replace("GB-RA", "GB")
             # Insert IMEI into MongoDB collection
+            print(sku_value)
+            sku_value = str(sku_value)  # Convert to string before querying
+
             result = get_product_description(sku_value)
             print(result)
             if isinstance(result, list) and len(result) == 1:
