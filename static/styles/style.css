@@ -15,29 +15,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
-  font-size: 1.6rem;
+  gap: 1.5rem;
+  font-size: 1.5rem;
   opacity: 0;
   animation: fadeIn 1s ease forwards;
   font-family: Arial, sans-serif; /* Global font */
   flex-direction: column; /* Makes the body a flex container */
-}
-
-/* Styling the Logout link */
-a.logout-btn {
-  color: white;
-  background-color: #007bff;
-  padding: 10px 20px;
-  text-decoration: none;
-  border-radius: 5px;
-  font-weight: bold;
-  text-align: center;
-  display: inline-block;
-}
-
-a.logout-btn:hover {
-  background-color: #0056b3;
-  color: white;
 }
 
 /* Error Page Styling */
@@ -111,7 +94,9 @@ button {
   color: white;
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
 }
 
 button:hover {
@@ -146,7 +131,9 @@ button:hover {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: opacity 0.3s ease, transform 0.2s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.2s ease;
   opacity: 0;
   visibility: hidden;
 }
@@ -163,9 +150,11 @@ button:hover {
 /* Footer */
 footer {
   text-align: center;
-  font-size: 0.9em;
+  font-size: 0.7em;
   color: gray;
-  transition: transform 0.3s ease, color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
 }
 
 footer:hover {
@@ -198,50 +187,6 @@ footer:hover {
   font-weight: bold;
   font-size: 1.5em;
   animation: pulse 3s infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.9;
-  }
-}
-
-/* Snowman Bouncing Animation */
-.snowman {
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  width: 500px;
-  height: auto;
-  z-index: 10;
-  animation: bounce 2s infinite;
-}
-
-/* Tech Bouncing Animation */
-.Tech {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  width: 500px;
-  height: auto;
-  z-index: 10;
-  animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
 }
 
 /* Main Content */
@@ -306,3 +251,124 @@ main {
   }
 }
 
+/* =========================================
+   WARRANTY MESSAGES - COMMON CONTAINER
+   ========================================= */
+
+.warranty-messages {
+  width: 100%;
+  max-width: 1600px;
+
+  margin: 0 auto;
+
+  text-align: left;
+}
+
+/* =========================================
+   WARRANTY COMMENTS - RED
+   ========================================= */
+
+.warranty-warning {
+  width: 100%;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: red !important;
+
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+
+  text-align: left !important;
+}
+
+.warranty-warning .warranty-intro {
+  margin: 0 !important;
+  padding: 0 !important;
+
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+
+  text-align: left !important;
+}
+
+.warranty-warning ul {
+  margin: 2px 0 !important;
+
+  padding-left: 30px !important;
+
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+
+  text-align: left !important;
+}
+
+.warranty-warning li {
+  margin: 0 0 2px 0 !important;
+  padding: 0 !important;
+
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+
+  text-align: left !important;
+}
+
+.warranty-warning .warranty-action {
+  margin: 0 !important;
+  padding: 0 !important;
+
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+
+  text-align: left !important;
+}
+
+/* =========================================
+   WARRANTY UPDATES - ORANGE
+   ========================================= */
+
+.warranty-updates {
+  width: 100%;
+
+  margin-top: 10px;
+
+  text-align: left !important;
+}
+
+.warranty-update {
+  width: 100%;
+
+  margin: 0 0 8px 0 !important;
+  padding: 0 !important;
+
+  color: orange !important;
+
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+
+  text-align: left !important;
+}
+
+/* =========================================
+   FLASHING NOTE
+   ========================================= */
+
+.note-warning {
+  color: red !important;
+  font-weight: bold;
+  animation: noteFlash 3s infinite;
+  margin: 10px 0;
+}
+
+@keyframes noteFlash {
+  0%,
+  100% {
+    color: red;
+    opacity: 1;
+  }
+
+  50% {
+    color: orange;
+    opacity: 0.4;
+  }
+}
