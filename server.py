@@ -42,6 +42,12 @@ mongodb_password = os.getenv('MONGODB_PASSWORD')
 mongodb_ip = os.getenv('MONGODB_IP')
 mongodb_auth_source = os.getenv('MONGODB_AUTH_SOURCE')
 
+# =========================================================
+# Server environment variables
+# =========================================================
+
+IP_SERVER_PORT = os.getenv('IP_SERVER_PORT', '127.0.0.1')
+PORT_SERVER = int(os.getenv('PORT_SERVER', '5001'))
 
 # =========================================================
 # Flask secret key / session
@@ -606,6 +612,6 @@ if __name__ == "__main__":
 
     serve(
         app,
-        host="0.0.0.0",
-        port=8000
+        host=IP_SERVER_PORT,
+        port=PORT_SERVER
     )
