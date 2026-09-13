@@ -372,3 +372,25 @@ main {
     opacity: 0.4;
   }
 }
+
+@keyframes flash-red-white {
+  0%,
+  100% {
+    background-color: #ff0000; /* Solid Red */
+    color: #ffffff; /* White Text */
+  }
+  50% {
+    background-color: #ffffff; /* Solid White */
+    color: #ff0000; /* Red Text */
+  }
+}
+
+.flash-iw {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  border: 2px solid #ff0000;
+  /* This loops the flash animation smoothly every 1 second */
+  animation: flash-red-white 3s infinite ease-in-out;
+}
