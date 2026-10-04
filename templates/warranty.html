@@ -2,221 +2,650 @@
 
 {% block content %}
 
-<h1>
-    IMEI: {{ imei_value|trim }} <strong>Warranty Check</strong>
-</h1>
+<div class="warranty-page">
 
-<p>
-    Description :
-    <span class="lightred-text">
-        <strong>{{ Description_value }}</strong>
-    </span>
-</p>
+    <!-- ================================================= -->
+    <!-- PAGE TITLE                                        -->
+    <!-- ================================================= -->
+
+    <h1>
+        IMEI: {{ imei_value|trim }}
+        <strong>Warranty Check</strong>
+    </h1>
+
+    <!-- DESCRIPTION -->
+
+    <p>
+        Description:
+        <span class="lightred-text">
+            <strong>{{ Description_value }}</strong>
+        </span>
+    </p>
+
+    <!-- ================================================= -->
+    <!-- NORMALISED VALUES                                 -->
+    <!-- ================================================= -->
+
+    {% set model = product_line_value|trim|lower %}
+    {% set warranty_status = warranty_status_value|trim|upper %}
+    {% set api_note = note_text|trim|lower %}
 
 
-<!-- ========================================= -->
-<!-- WARRANTY MESSAGES                        -->
-<!-- ========================================= -->
+    <!-- ================================================= -->
+    <!-- WARRANTY MESSAGES                                 -->
+    <!-- ================================================= -->
 
-<div class="warranty-messages">
+    <div class="warranty-messages">
 
-    <!-- ========================================= -->
-    <!-- Warranty Warning Messages from MongoDB   -->
-    <!-- ========================================= -->
+        <!-- WARRANTY COMMENTS -->
 
-    {% if warranty_comments %}
+        {% if warranty_comments %}
 
-    <div class="warranty-warning">
+        <div class="warranty-warning">
 
-        <div class="warranty-intro">
-            - {{ warranty_intro }}
+            {% if warranty_intro %}
+            <p class="warranty-intro">
+                {{ warranty_intro }}
+            </p>
+            {% endif %}
+
+            <ul>
+                {% for comment in warranty_comments %}
+                <li>
+                    {{ comment.text }}
+                </li>
+                {% endfor %}
+            </ul>
+
+            {% if warranty_action %}
+            <p class="warranty-action">
+                {{ warranty_action }}
+            </p>
+            {% endif %}
+
         </div>
 
-        <ul>
-            {% for comment in warranty_comments %}
-            <li>
-                {{ comment.text }}
-            </li>
+        {% endif %}
+
+
+        <!-- WARRANTY UPDATES -->
+
+        {% if warranty_updates %}
+
+        <div class="warranty-updates">
+
+            {% for update in warranty_updates %}
+
+            <div class="warranty-update">
+
+                <ul>
+                    <li>
+                        Update {{ update.date }}: {{ update.text }}
+                    </li>
+                </ul>
+
+            </div>
+
             {% endfor %}
-        </ul>
 
-        <div class="warranty-action">
-            {{ warranty_action }}
         </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- WARRANTY INFORMATION                              -->
+    <!-- ================================================= -->
+
+    <div class="warranty-info">
+
+        <p>
+            <strong>SKU:</strong>
+            {{ sku_value }}
+        </p>
+
+        <p>
+            <strong>Product Line ID:</strong>
+            {{ product_line_id_value }}
+        </p>
+
+        <p>
+            <strong>Product Line:</strong>
+            {{ product_line_value }}
+        </p>
+
+        <p>
+            <strong>IMEI:</strong>
+            {{ imei_value }}
+        </p>
+
+        <p>
+            <strong>Serial Number:</strong>
+            {{ serial_number_value }}
+        </p>
+
+        <p>
+            <strong>Warranty Status:</strong>
+
+            {% if warranty_status == "IW" or warranty_status == "OOW" %}
+
+            <span class="flash-warranty-status">
+                {{ warranty_status }}
+            </span>
+
+            {% else %}
+
+            {{ warranty_status_value }}
+
+            {% endif %}
+
+        </p>
+
+        <p>
+            <strong>Warranty End Date:</strong>
+            {{ warranty_end_date_value }}
+        </p>
+
+        <p>
+            <strong>Product Line Authorization:</strong>
+            {{ product_line_authorization_value }}
+        </p>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- PIXEL 9 PRO XL - OOW - T030                      -->
+    <!-- ================================================= -->
+
+    {% if warranty_status == "OOW" and model == "pixel 9 pro xl" %}
+
+    <div class="sbe-internal-note">
+
+        <div class="sbe-note-title">
+            ⭐ <strong>Additional Warranty Information (INTERNAL NOTE FROM SBE)</strong> ⭐
+        </div>
+
+        <p class="sbe-note-text">
+            If you declare the T-Code below, the handset is IW.
+            Close it as Repair Complet GG (IW) &amp; IW/OEM-API in GC.
+            Customer must be refunded if they have paid a quote.
+        </p>
+
+        <table class="sbe-tcode-table">
+
+            <thead>
+                <tr>
+                    <th>TCODE</th>
+                    <th>DESCRIPTION</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>T030</td>
+                    <td>Display vertical or horizontal lines</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <p class="extra-warranty-date">
+            <strong>Extra Warranty End Date:</strong>
+            <span id="extra-warranty-date"></span>
+        </p>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- PIXEL 9 PRO - OOW - T027/T030/T031/T032          -->
+    <!-- ================================================= -->
+
+    {% elif warranty_status == "OOW" and model == "pixel 9 pro" %}
+
+    <div class="sbe-internal-note">
+
+        <div class="sbe-note-title">
+            ⭐ <strong>Additional Warranty Information (INTERNAL NOTE FROM SBE)</strong> ⭐
+        </div>
+
+        <p class="sbe-note-text">
+            If you declare the T-Code below, the handset is IW.
+            Close it as Repair Complet GG (IW) &amp; IW/OEM-API in GC.
+            Customer must be refunded if they have paid a quote.
+        </p>
+
+        <table class="sbe-tcode-table">
+
+            <thead>
+                <tr>
+                    <th>TCODE</th>
+                    <th>DESCRIPTION</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>T027</td>
+                    <td>Display blank</td>
+                </tr>
+
+                <tr>
+                    <td>T030</td>
+                    <td>Display vertical or horizontal lines</td>
+                </tr>
+
+                <tr>
+                    <td>T031</td>
+                    <td>Display black, white or colored screen</td>
+                </tr>
+
+                <tr>
+                    <td>T032</td>
+                    <td>Display flickering/abnormal</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <p class="extra-warranty-date">
+            <strong>Extra Warranty End Date:</strong>
+            <span id="extra-warranty-date"></span>
+        </p>
 
     </div>
 
     {% endif %}
 
 
-    <!-- ========================================= -->
-    <!-- Warranty Updates from MongoDB            -->
-    <!-- ========================================= -->
+    <!-- ================================================= -->
+    <!-- PIXEL 8 OOW - EXTENDED REPAIR PROGRAM             -->
+    <!-- ================================================= -->
 
-    {% if warranty_updates %}
+    {% if warranty_status == "OOW"
+    and model == "pixel 8"
+    and "extended repair program" in api_note %}
 
-    <div class="warranty-updates">
+    <div class="sbe-internal-note">
 
-        {% for update in warranty_updates %}
-
-        <div class="warranty-update">
-            - Update {{ update.date }} : {{ update.text }}
+        <div class="sbe-note-title">
+            ⭐ <strong>Additional Warranty Information (INTERNAL NOTE FROM SBE)</strong> ⭐
         </div>
 
-        {% endfor %}
+        <p class="sbe-note-text">
+            LCD is eligible for the Extended Repair Program and can be
+            replaced IW using T-Code <strong>T030</strong> or
+            <strong>T032</strong>.
+            Close it as Repair Complet GG (IW) &amp; IW/OEM-API in GC.
+            Customer must be refunded if they have paid a quote.
+        </p>
+
+        <table class="sbe-tcode-table">
+
+            <thead>
+                <tr>
+                    <th>TCODE</th>
+                    <th>DESCRIPTION</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>T030</td>
+                    <td>Display vertical or horizontal lines</td>
+                </tr>
+
+                <tr>
+                    <td>T032</td>
+                    <td>Display flickering/abnormal</td>
+                </tr>
+
+            </tbody>
+
+        </table>
 
     </div>
 
     {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- PIXEL 7A OOW - ELIGIBLE REPAIR                    -->
+    <!-- ================================================= -->
+
+    {% if warranty_status == "OOW"
+    and model == "pixel 7a"
+    and "eligible" in api_note
+    and "not eligible" not in api_note %}
+
+    <div class="sbe-internal-note">
+
+        <div class="sbe-note-title">
+            ⭐ <strong>Additional Warranty Information (INTERNAL NOTE FROM SBE)</strong> ⭐
+        </div>
+
+        <p class="sbe-note-text">
+            Handset is eligible for repair IW using one of the following
+            T-Code combinations:
+        </p>
+
+        <table class="sbe-tcode-table">
+
+            <thead>
+                <tr>
+                    <th>REPAIR</th>
+                    <th>T-CODE</th>
+                    <th>ISSUE</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Repair Battery</td>
+                    <td><strong>T054</strong></td>
+                    <td>Battery draining fast</td>
+                </tr>
+
+                <tr>
+                    <td>Repair Battery</td>
+                    <td><strong>T192</strong></td>
+                    <td>Fix on Touch (FOT)</td>
+                </tr>
+
+                <tr>
+                    <td>Repair Battery + Battery Cover</td>
+                    <td><strong>T081 + T053</strong></td>
+                    <td>BG damage + Battery damage</td>
+                </tr>
+
+                <tr>
+                    <td>MB Replacement + Battery + Battery Cover</td>
+                    <td><strong>T002 + T053 + T081</strong></td>
+                    <td>
+                        Powers off suddenly +
+                        Battery damage +
+                        BG damage
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <p class="sbe-note-text">
+            Close it as Repair Complet GG (IW) &amp; IW/OEM-API in GC.
+            Customer must be refunded if they have paid a quote.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- PIXEL 7A IW - NO API NOTE                         -->
+    <!-- ================================================= -->
+
+    {% if warranty_status == "IW"
+    and model == "pixel 7a"
+    and (
+    not api_note
+    or api_note == "no note available"
+    or api_note == "no notes available"
+    ) %}
+
+    <div class="sbe-internal-note">
+
+        <div class="sbe-note-title">
+            ⭐ <strong>Additional Warranty Information (INTERNAL NOTE FROM SBE)</strong> ⭐
+        </div>
+
+        <p class="sbe-note-text">
+            If the battery and battery cover need replacing,
+            use both T-Code <strong>T053</strong> and
+            <strong>T042</strong>.
+        </p>
+
+        <table class="sbe-tcode-table">
+
+            <thead>
+                <tr>
+                    <th>T-CODE</th>
+                    <th>ISSUE</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td><strong>T053</strong></td>
+                    <td>Battery damage</td>
+                </tr>
+
+                <tr>
+                    <td><strong>T042</strong></td>
+                    <td>
+                        Display to backcover or visor to backcover gap
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <p class="sbe-note-text">
+            <strong>Required combination:</strong>
+            T053 + T042
+        </p>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- GOOGLE API NOTE                                    -->
+    <!-- ================================================= -->
+
+    <p class="note-warning">
+
+        <strong>Note (From Google API):</strong>
+
+        {% if note_text %}
+        {{ note_text }}
+        {% else %}
+        No note available
+        {% endif %}
+
+    </p>
+
+
+    <!-- ================================================= -->
+    <!-- IMEI SEARCH FORM                                   -->
+    <!-- ================================================= -->
+
+    <form action="{{ url_for('warranty') }}" method="GET" onsubmit="return validateIMEI()">
+
+        <input type="text" name="imei" id="imei" placeholder="Enter an IMEI" pattern="\d{15}" maxlength="15"
+            inputmode="numeric" required autofocus title="Enter a valid 15-digit IMEI number" />
+
+        <button type="submit">
+            Submit
+        </button>
+
+    </form>
 
 </div>
 
 
-
-<!-- ========================================= -->
-<!-- Warranty Information                     -->
-<!-- ========================================= -->
-
-<p>
-    SKU: {{ sku_value }}
-</p>
-
-<p>
-    Product Line ID: {{ product_line_id_value }}
-</p>
-
-<p>
-    Product Line: {{ product_line_value }}
-</p>
-
-<p>
-    IMEI: {{ imei_value }}
-</p>
-
-<p>
-    Serial Number: {{ serial_number_value }}
-</p>
-
-<p>
-    Warranty Status: <span class="flash-iw">{{ warranty_status_value }} </span>
-
-</p>
-
-<p>
-    Warranty End Date: {{ warranty_end_date_value }}
-</p>
-
-<p>
-    Product Line Authorization: {{ product_line_authorization_value }}
-</p>
-
-
-<!-- ========================================= -->
-<!-- Optional Note                            -->
-<!-- ========================================= -->
-
-{% if note_text %}
-<p class="note-warning">
-    ⚠️ Note: {{ note_text }}
-</p>
-{% endif %}
-
-
-<!-- ========================================= -->
-<!-- IMEI Search Form                         -->
-<!-- ========================================= -->
-
-<form action="/warranty" method="GET" onsubmit="return validateIMEI()">
-
-    <input type="text" name="imei" id="imei" placeholder="Enter an IMEI" pattern="\d{15}" maxlength="15"
-        inputmode="numeric" required autofocus title="Enter a valid 15-digit IMEI number" />
-
-    <button type="submit">
-        Submit
-    </button>
-
-</form>
-
+<!-- ===================================================== -->
+<!-- JAVASCRIPT                                             -->
+<!-- ===================================================== -->
 
 <script>
 
-    // =========================================
-    // Luhn Algorithm to validate IMEI number
-    // =========================================
+    /* ===================================================== */
+    /* CALCULATE EXTRA WARRANTY DATE                         */
+    /* ===================================================== */
+
+    function calculateExtraWarrantyDate() {
+
+        const originalDate = "{{ warranty_end_date_value|trim }}";
+
+        const output =
+            document.getElementById("extra-warranty-date");
+
+        /*
+         * The element only exists for the Pixel 9 Pro
+         * and Pixel 9 Pro XL OOW cases.
+         */
+
+        if (!output) {
+            return;
+        }
+
+        if (!originalDate || originalDate === "N/A") {
+            output.textContent = "N/A";
+            return;
+        }
+
+        /*
+         * Expected format:
+         * YYYY-MM-DD
+         */
+
+        const parts = originalDate.split("-");
+
+        if (parts.length !== 3) {
+            output.textContent = "Unable to calculate";
+            return;
+        }
+
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const day = parseInt(parts[2], 10);
+
+        if (
+            isNaN(year) ||
+            isNaN(month) ||
+            isNaN(day)
+        ) {
+            output.textContent = "Unable to calculate";
+            return;
+        }
+
+        const extraYear = year + 1;
+
+        output.textContent =
+            `${extraYear}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    }
+
+
+    /* ===================================================== */
+    /* IMEI LUHN VALIDATION                                   */
+    /* ===================================================== */
 
     function luhnCheck(imei) {
 
         let sum = 0;
-        let shouldDouble = false;
 
-        // Start from the rightmost digit
-        // and work towards the left
-        for (let i = imei.length - 1; i >= 0; i--) {
+        /*
+         * Check the first 14 digits.
+         */
 
-            let digit = parseInt(
-                imei.charAt(i),
-                10
-            );
+        for (let i = 0; i < 14; i++) {
 
-            if (shouldDouble) {
+            let digit =
+                parseInt(imei.charAt(i), 10);
+
+            /*
+             * Double digits in positions
+             * 2, 4, 6, etc.
+             */
+
+            if (i % 2 === 1) {
 
                 digit *= 2;
 
-                // If doubling gives a number > 9,
-                // subtract 9
                 if (digit > 9) {
                     digit -= 9;
                 }
             }
 
             sum += digit;
-
-            // Alternate doubling
-            shouldDouble = !shouldDouble;
         }
 
-        // Valid IMEI when total is divisible by 10
-        return sum % 10 === 0;
+        /*
+         * 15th digit is the check digit.
+         */
+
+        const checkDigit =
+            parseInt(imei.charAt(14), 10);
+
+        return (sum + checkDigit) % 10 === 0;
     }
 
 
-    // =========================================
-    // Validate IMEI before form submission
-    // =========================================
+    /* ===================================================== */
+    /* VALIDATE IMEI BEFORE FORM SUBMISSION                   */
+    /* ===================================================== */
 
     function validateIMEI() {
 
-        let imei = document
-            .getElementById("imei")
-            .value
-            .trim();
+        const input =
+            document.getElementById("imei");
 
+        const imei =
+            input.value.trim();
 
-        // Check exactly 15 digits
+        /*
+         * Must contain exactly 15 digits.
+         */
+
         if (!/^\d{15}$/.test(imei)) {
 
             alert(
-                "Please enter a valid 15-digit IMEI number."
+                "Please enter a valid 15-digit IMEI."
             );
+
+            input.focus();
 
             return false;
         }
 
+        /*
+         * Luhn validation.
+         */
 
-        // Check Luhn algorithm
         if (!luhnCheck(imei)) {
 
             alert(
-                "Invalid IMEI number. Please check the number and try again."
+                "Invalid IMEI. Please check the number and try again."
             );
+
+            input.focus();
 
             return false;
         }
 
-
-        // IMEI is valid
         return true;
     }
+
+
+    /* ===================================================== */
+    /* CALCULATE EXTRA WARRANTY DATE WHEN REQUIRED            */
+    /* ===================================================== */
+
+    calculateExtraWarrantyDate();
 
 </script>
 

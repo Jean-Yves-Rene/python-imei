@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>SNC Checker
+
+    <span class="google-logo">
+        <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+    </span>
+
+</h1>
+
+
+<!-- ========================================= -->
+<!-- SNC SEARCH                               -->
+<!-- ========================================= -->
+
+<form action="{{ url_for('snc_checker') }}" method="POST" onsubmit="return validateSNC()">
+
+    <input type="text" name="snc" id="snc" class="snc-input" placeholder="Enter SNC / Claim Number" maxlength="9"
+        pattern="SNC[0-9]{6}" title="Enter a claim number in the format SNC696333" autocomplete="off" required
+        autofocus>
+
+    <button type="submit">
+        Check SNC
+    </button>
+
+</form>
+
+
+<!-- ========================================= -->
+<!-- ERROR                                    -->
+<!-- ========================================= -->
+
+{% if error %}
+
+<div class="red-text snc-error">
+    <strong>{{ error }}</strong>
+</div>
+
+{% endif %}
+
+
+{% if result %}
+
+
+<!-- ========================================= -->
+<!-- CLAIM INFORMATION                        -->
+<!-- ========================================= -->
+
+<div class="snc-section">
+
+    <h2>Claim Information</h2>
+
+    <p>
+        <strong>SNC:</strong>
+        <span class="snc-value">
+            {{ result.id if result.id else request.form.get('snc') }}
+        </span>
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+        <span class="snc-value">
+            {{ result.status }}
+        </span>
+    </p>
+
+    <p>
+        <strong>Status Timestamp:</strong>
+        <span class="snc-value">
+            {{ result.status_timestamp }}
+        </span>
+    </p>
+
+    <p>
+        <strong>Ticket ID:</strong>
+        <span class="snc-value">
+            {{ result.ticket_id }}
+        </span>
+    </p>
+
+</div>
+
+
+<!-- ========================================= -->
+<!-- DEVICE INFORMATION                       -->
+<!-- ========================================= -->
+
+<div class="snc-section">
+
+    <h2>Device Information</h2>
+
+    {% if result.equipment %}
+
+    <p>
+        <strong>Make:</strong>
+        <span class="snc-value">
+            {{ result.equipment.make }}
+        </span>
+    </p>
+
+    <p>
+        <strong>Model:</strong>
+        <span class="snc-value">
+            {{ result.equipment.model }}
+        </span>
+    </p>
+
+    <p>
+        <strong>Serial:</strong>
+        <span class="snc-value">
+            {{ result.equipment.serial }}
+        </span>
+    </p>
+
+    <p>
+        <strong>SKU:</strong>
+        <span class="snc-value">
+            {{ result.equipment.sku }}
+        </span>
+    </p>
+
+    <p>
+        <strong>IMEI:</strong>
+        <span class="snc-value">
+            {{ result.equipment.imei }}
+        </span>
+    </p>
+
+    {% endif %}
+
+    <p>
+        <strong>Equipment SKU:</strong>
+        <span class="snc-value">
+            {{ result.equipment_sku }}
+        </span>
+    </p>
+
+    <p>
+        <strong>Product Line:</strong>
+        <span class="snc-value">
+            {{ result.product_line }}
+        </span>
+    </p>
+
+</div>
+
+
+<!-- ========================================= -->
+<!-- T-CODE INFORMATION                       -->
+<!-- ========================================= -->
+
+{% if result.t_codes %}
+
+{% for tcode in result.t_codes %}
+
+<div class="snc-section">
+
+    <h2>T-Code Information</h2>
+
+    <p>
+        <strong>T-Code:</strong>
+        <span class="snc-value">
+            T{{ tcode.code }}
+        </span>
+    </p>
+
+    <p>
+        <strong>Category:</strong>
+        <span class="snc-value">
+            {{ tcode.category }}
+        </span>
+    </p>
+
+    <p>
+        <strong>Subcategory:</strong>
+        <span class="snc-value">
+            {{ tcode.subcategory }}
+        </span>
+    </p>
+
+
+    <!-- ===================================== -->
+    <!-- WARRANTY STATUS                      -->
+    <!-- ===================================== -->
+
+    <p>
+        <strong>Warranty Status:</strong>
+
+        {% if tcode.warranty_status|upper == "IW" %}
+
+        <span class="warranty-status-red">
+            IN WARRANTY
+        </span>
+
+        {% elif tcode.warranty_status|upper == "OOW" %}
+
+        <span class="warranty-status-red">
+            OUT OF WARRANTY
+        </span>
+
+        {% else %}
+
+        <span class="snc-value">
+            {{ tcode.warranty_status }}
+        </span>
+
+        {% endif %}
+
+    </p>
+
+
+
+
+    <!-- ===================================== -->
+    <!-- REPAIR INFORMATION                  -->
+    <!-- ===================================== -->
+
+    {% if tcode.suggested_actions %}
+
+    <h3>Repair Information</h3>
+
+    {% for action in tcode.suggested_actions %}
+
+    <div class="repair-box">
+
+        <p>
+            <strong>Order:</strong>
+            <span class="snc-value">
+                {{ action.order }}
+            </span>
+        </p>
+
+        <p>
+            <strong>Repair Code:</strong>
+            <span class="snc-value">
+                {{ action.repair_code }}
+            </span>
+        </p>
+
+        <p>
+            <strong>Repair Description:</strong>
+            <span class="snc-value">
+                {{ action.repair_description }}
+            </span>
+        </p>
+
+        <p>
+            <strong>Service Level:</strong>
+            <span class="snc-value">
+                {{ action.service_level }}
+            </span>
+        </p>
+
+
+        <!-- ================================ -->
+        <!-- PART INFORMATION                -->
+        <!-- ================================ -->
+
+        {% if action.parts %}
+
+        <h4>Part Information</h4>
+
+        {% for part in action.parts %}
+
+        <p>
+            <strong>Part Number:</strong>
+            <span class="snc-value">
+                {{ part.number }}
+            </span>
+        </p>
+
+        <p>
+            <strong>Part Description:</strong>
+            <span class="snc-value">
+                {{ part.description }}
+            </span>
+        </p>
+
+        {% endfor %}
+
+        {% endif %}
+
+    </div>
+
+    {% endfor %}
+
+    {% endif %}
+
+</div>
+
+{% endfor %}
+
+{% endif %}
+
+
+{% endif %}
+
+
+<!-- ========================================= -->
+<!-- SNC VALIDATION                           -->
+<!-- ========================================= -->
+
+<script>
+
+    const sncInput = document.getElementById("snc");
+
+
+    /*
+     * Automatically convert lowercase
+     * letters to uppercase.
+     *
+     * Example:
+     *
+     * snc696333
+     *
+     * becomes:
+     *
+     * SNC696333
+     */
+
+    sncInput.addEventListener("input", function () {
+
+        this.value = this.value.toUpperCase();
+
+    });
+
+
+    /*
+     * =========================================
+     * VALIDATE SNC
+     * =========================================
+     *
+     * Required format:
+     *
+     * SNC696333
+     *
+     * SNC + exactly 6 digits
+     */
+
+    function validateSNC() {
+
+        const input = document.getElementById("snc");
+
+        const snc = input.value.trim().toUpperCase();
+
+        /*
+         * Update input with uppercase value
+         */
+
+        input.value = snc;
+
+
+        /*
+         * SNC + exactly 6 numbers
+         */
+
+        const sncPattern = /^SNC\d{6}$/;
+
+
+        /*
+         * Check format
+         */
+
+        if (!sncPattern.test(snc)) {
+
+            alert(
+                "Invalid claim number.\n\n" +
+                "The claim number must be in the format:\n\n" +
+                "SNC696333"
+            );
+
+            input.focus();
+
+            return false;
+        }
+
+
+        /*
+         * Valid
+         */
+
+        return true;
+    }
+
+</script>
+
+{% endblock %}

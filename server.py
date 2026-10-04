@@ -1,20 +1,42 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
+from flask import (
+    Flask,
+    render_template,
+    request,
+    jsonify,
+    session,
+    redirect,
+    url_for,
+    flash
+)
+
 from functools import wraps
-from warranty import get_current_warranty, is_valid_imei
+
+from warranty import (
+    get_current_warranty,
+    get_snc_claim,
+    is_valid_imei
+)
+
 from waitress import serve
 from dotenv import load_dotenv
+
 from SKU_designation import get_product_description
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+
 from datetime import timedelta
 from datetime import datetime
+
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
+
 import pymongo
 import logging
 import os
 import json
 
+
+# =========================================================
+# Create Flask application
+# =========================================================
 
 app = Flask(__name__)
 
@@ -23,11 +45,13 @@ app = Flask(__name__)
 # Configure logging
 # =========================================================
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO
+)
 
 
 # =========================================================
-# Load environment variables from .env
+# Load environment variables
 # =========================================================
 
 load_dotenv()
@@ -37,17 +61,39 @@ load_dotenv()
 # MongoDB environment variables
 # =========================================================
 
-mongodb_username = os.getenv('MONGODB_USERNAME')
-mongodb_password = os.getenv('MONGODB_PASSWORD')
-mongodb_ip = os.getenv('MONGODB_IP')
-mongodb_auth_source = os.getenv('MONGODB_AUTH_SOURCE')
+mongodb_username = os.getenv(
+    'MONGODB_USERNAME'
+)
+
+mongodb_password = os.getenv(
+    'MONGODB_PASSWORD'
+)
+
+mongodb_ip = os.getenv(
+    'MONGODB_IP'
+)
+
+mongodb_auth_source = os.getenv(
+    'MONGODB_AUTH_SOURCE'
+)
+
 
 # =========================================================
 # Server environment variables
 # =========================================================
 
-IP_SERVER_PORT = os.getenv('IP_SERVER_PORT', '127.0.0.1')
-PORT_SERVER = int(os.getenv('PORT_SERVER', '5001'))
+IP_SERVER_PORT = os.getenv(
+    'IP_SERVER_PORT',
+    '127.0.0.1'
+)
+
+PORT_SERVER = int(
+    os.getenv(
+        'PORT_SERVER',
+        '5001'
+    )
+)
+
 
 # =========================================================
 # Flask secret key / session
@@ -58,7 +104,9 @@ app.secret_key = os.getenv(
     'mysecretkey'
 )
 
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(
+app.config[
+    'PERMANENT_SESSION_LIFETIME'
+] = timedelta(
     minutes=60
 )
 
@@ -73,17 +121,43 @@ uri = (
     f"?authSource={mongodb_auth_source}"
 )
 
+mongo_client = MongoClient(
+    uri
+)
 
-mongo_client = MongoClient(uri)
 
-# Existing database
+# =========================================================
+# MongoDB database
+# =========================================================
+
 db = mongo_client["local"]
 
-# Existing collection
-collection = db["Google_Warranty_Check"]
 
+# =========================================================
+# Existing IMEI collection
+# =========================================================
+
+collection = db[
+    "Google_Warranty_Check"
+]
+
+
+# =========================================================
 # Warranty comments collection
-warranty_comments = db["warranty_comments"]
+# =========================================================
+
+warranty_comments = db[
+    "warranty_comments"
+]
+
+
+# =========================================================
+# SNC checker collection
+# =========================================================
+
+snc_collection = db[
+    "Google_SNC_Check"
+]
 
 
 # =========================================================
@@ -91,6 +165,7 @@ warranty_comments = db["warranty_comments"]
 # =========================================================
 
 def get_current_date():
+
     return datetime.now()
 
 
@@ -107,6 +182,7 @@ def add_no_cache_headers(response):
     )
 
     response.headers["Pragma"] = "no-cache"
+
     response.headers["Expires"] = "0"
 
     return response
@@ -120,7 +196,10 @@ def add_no_cache_headers(response):
 def ratelimit_error(e):
 
     return jsonify(
-        error="Too many requests. Please try again later."
+        error=(
+            "Too many requests. "
+            "Please try again later."
+        )
     ), 429
 
 
@@ -161,13 +240,215 @@ def home():
 
 
 # =========================================================
-# Warranty route
+# SNC CHECKER
+# =========================================================
+
+@app.route(
+    '/snc-checker',
+    methods=['GET', 'POST']
+)
+def snc_checker():
+
+    result = None
+
+    error = None
+
+
+    # =====================================================
+    # Only process SNC when the form is submitted
+    # =====================================================
+
+    if request.method == 'POST':
+
+        snc = request.form.get(
+            'snc',
+            ''
+        ).strip()
+
+
+        # =================================================
+        # Validate SNC input
+        # =================================================
+
+        if not snc:
+
+            error = (
+                "Please enter an "
+                "SNC / claim number."
+            )
+
+
+        else:
+
+            try:
+
+                # =============================================
+                # Call SNC API
+                # =============================================
+
+                response = get_snc_claim(
+                    snc
+                )
+
+
+                logging.info(
+                    f"SNC API response: "
+                    f"{response.status_code} - "
+                    f"{response.text}"
+                )
+
+
+                # =============================================
+                # Successful API response
+                # =============================================
+
+                if response.status_code == 200:
+
+                    data = response.json()
+
+
+                    # =========================================
+                    # API says success
+                    # =========================================
+
+                    if data.get('success'):
+
+                        result = data.get(
+                            'data',
+                            {}
+                        )
+
+
+                        # =====================================
+                        # Save SNC lookup to MongoDB
+                        # =====================================
+
+                        snc_entry = {
+
+                            "snc": snc,
+
+                            "ticket_id": result.get(
+                                "ticket_id"
+                            ),
+
+                            "status": result.get(
+                                "status"
+                            ),
+
+                            "status_timestamp": result.get(
+                                "status_timestamp"
+                            ),
+
+                            "equipment": result.get(
+                                "equipment",
+                                {}
+                            ),
+
+                            "equipment_sku": result.get(
+                                "equipment_sku"
+                            ),
+
+                            "product_line": result.get(
+                                "product_line"
+                            ),
+
+                            "asp_tier": result.get(
+                                "asp_tier"
+                            ),
+
+                            "asp_level": result.get(
+                                "asp_level"
+                            ),
+
+                            "authorization_code": result.get(
+                                "authorization_code"
+                            ),
+
+                            "t_codes": result.get(
+                                "t_codes",
+                                []
+                            ),
+
+                            "date_checked": get_current_date().strftime(
+                                "%Y-%m-%dT%H:%M"
+                            )
+                        }
+
+
+                        # =====================================
+                        # Insert into MongoDB
+                        # =====================================
+
+                        snc_collection.insert_one(
+                            snc_entry
+                        )
+
+
+                    # =========================================
+                    # API returned success = false
+                    # =========================================
+
+                    else:
+
+                        error = data.get(
+                            'message',
+                            'SNC not found.'
+                        )
+
+
+                # =============================================
+                # API returned an HTTP error
+                # =============================================
+
+                else:
+
+                    error = (
+                        f"SNC lookup failed. "
+                        f"HTTP status: "
+                        f"{response.status_code}"
+                    )
+
+
+            except Exception as e:
+
+                logging.error(
+                    f"SNC lookup error: {e}"
+                )
+
+                error = (
+                    "An unexpected error occurred "
+                    "while checking the SNC."
+                )
+
+
+    # =====================================================
+    # Display SNC page
+    # =====================================================
+
+    return render_template(
+        'snc-checker.html',
+        result=result,
+        error=error
+    )
+
+
+# =========================================================
+# WARRANTY ROUTE
 # =========================================================
 
 @app.route('/warranty')
 def warranty():
 
-    imei = request.args.get('imei')
+    imei = request.args.get(
+        'imei'
+    )
+
+    if not imei:
+
+        return render_template(
+            'index.html'
+        )
+
 
     try:
 
@@ -175,7 +456,10 @@ def warranty():
         # Get warranty information from warranty API
         # =====================================================
 
-        warranty_data = get_current_warranty(imei)
+        warranty_data = get_current_warranty(
+            imei
+        )
+
 
         logging.info(
             f"Warranty API response: "
@@ -199,22 +483,35 @@ def warranty():
             # API says no data found
             # =================================================
 
-            if not data.get('success', True):
+            if not data.get(
+                'success',
+                True
+            ):
 
-                current_date = get_current_date().strftime(
-                    "%Y-%m-%dT%H:%M"
+                current_date = (
+                    get_current_date()
+                    .strftime(
+                        "%Y-%m-%dT%H:%M"
+                    )
                 )
 
+
                 no_data_entry = {
+
                     "imei": imei,
+
                     "sku_value": "N/A",
+
                     "designation": "No Data Found",
-                    "date_added": current_date,
+
+                    "date_added": current_date
                 }
+
 
                 collection.insert_one(
                     no_data_entry
                 )
+
 
                 return render_template(
                     'imei-not-found.html'
@@ -244,9 +541,7 @@ def warranty():
             # =================================================
             # Get SKU
             #
-            # IMPORTANT:
-            # EU-RA and GB-RA are NO LONGER converted to GB.
-            # The SKU is kept exactly as returned by the API.
+            # Keep SKU exactly as returned by the API.
             # =================================================
 
             sku_value = device_data.get(
@@ -258,24 +553,32 @@ def warranty():
                 sku_value
             )
 
-            print("SKU returned by API:", sku_value)
+
+            print(
+                "SKU returned by API:",
+                sku_value
+            )
 
 
             # =================================================
             # Get product description
-            #
-            # The original SKU is passed to
-            # get_product_description().
             # =================================================
 
             result = get_product_description(
                 sku_value
             )
 
-            print("Product description:", result)
+
+            print(
+                "Product description:",
+                result
+            )
 
 
-            if isinstance(result, list) and len(result) == 1:
+            if (
+                isinstance(result, list)
+                and len(result) == 1
+            ):
 
                 result = result[0]
 
@@ -284,63 +587,83 @@ def warranty():
             # Save IMEI lookup to MongoDB
             # =================================================
 
-            current_date = get_current_date().strftime(
-                "%Y-%m-%dT%H:%M"
+            current_date = (
+                get_current_date()
+                .strftime(
+                    "%Y-%m-%dT%H:%M"
+                )
             )
 
+
             imei_entry = {
+
                 "imei": imei,
+
                 "sku_value": sku_value,
+
                 "designation": result,
+
                 "date_added": current_date
             }
+
 
             collection.insert_one(
                 imei_entry
             )
 
 
-            print("IMEI:", imei)
+            print(
+                "IMEI:",
+                imei
+            )
 
 
             # =================================================
             # Get notes from warranty API
             # =================================================
 
-            notes = device_data.get('notes')
+            notes = device_data.get(
+                'notes',
+                []
+            )
+
 
             note_text = "No notes available"
 
 
             if notes:
 
-                # ---------------------------------------------
-                # Notes returned as a list
-                # ---------------------------------------------
-
-                if isinstance(notes, list):
+                if isinstance(
+                    notes,
+                    list
+                ):
 
                     if len(notes) > 0:
 
                         first_note = notes[0]
 
-                        if isinstance(first_note, dict):
+                        if isinstance(
+                            first_note,
+                            dict
+                        ):
 
                             note_text = first_note.get(
                                 'note_text',
                                 'No notes available'
                             )
 
-                        elif isinstance(first_note, str):
+                        elif isinstance(
+                            first_note,
+                            str
+                        ):
 
                             note_text = first_note
 
 
-                # ---------------------------------------------
-                # Notes returned as a dictionary
-                # ---------------------------------------------
-
-                elif isinstance(notes, dict):
+                elif isinstance(
+                    notes,
+                    dict
+                ):
 
                     note_text = notes.get(
                         'note_text',
@@ -348,22 +671,23 @@ def warranty():
                     )
 
 
-                # ---------------------------------------------
-                # Notes returned as a string
-                # ---------------------------------------------
-
-                elif isinstance(notes, str):
+                elif isinstance(
+                    notes,
+                    str
+                ):
 
                     note_text = notes
 
 
-            # Make sure an empty/null note displays the default
             if not note_text:
 
                 note_text = "No notes available"
 
 
+            # =================================================
             # Log notes for troubleshooting
+            # =================================================
+
             logging.info(
                 f"Warranty API notes: {notes}"
             )
@@ -373,15 +697,16 @@ def warranty():
             )
 
 
-
             # =================================================
             # Get warranty comments from MongoDB
             # =================================================
 
-            comments_doc = warranty_comments.find_one({
-                "type": "warranty_notice",
-                "active": True
-            })
+            comments_doc = (
+                warranty_comments.find_one({
+                    "type": "warranty_notice",
+                    "active": True
+                })
+            )
 
 
             warranty_intro = ""
@@ -455,10 +780,6 @@ def warranty():
 
                 "warranty.html",
 
-                # ---------------------------------------------
-                # Warranty information
-                # ---------------------------------------------
-
                 Description_value=result,
 
                 sku_value=sku_value,
@@ -500,11 +821,6 @@ def warranty():
 
                 note_text=note_text,
 
-
-                # ---------------------------------------------
-                # MongoDB warranty comments
-                # ---------------------------------------------
-
                 warranty_intro=warranty_intro,
 
                 warranty_comments=warranty_comments_list,
@@ -539,17 +855,29 @@ def warranty():
             )
 
 
-            current_date = get_current_date().strftime(
-                "%Y-%m-%dT%H:%M"
+            current_date = (
+                get_current_date()
+                .strftime(
+                    "%Y-%m-%dT%H:%M"
+                )
             )
 
 
             error_entry = {
+
                 "imei": imei,
+
                 "sku_value": "N/A",
-                "designation": "Not Found or Invalid",
+
+                "designation": (
+                    "Not Found or Invalid"
+                ),
+
                 "date_added": current_date,
-                "status_code": warranty_data.status_code,
+
+                "status_code": (
+                    warranty_data.status_code
+                )
             }
 
 
@@ -561,7 +889,8 @@ def warranty():
             return render_template(
                 "errordatanotfound.html",
                 error=(
-                    f"Request failed with status code: "
+                    f"Request failed with "
+                    f"status code: "
                     f"{warranty_data.status_code}. "
                     f"Message: {message}"
                 )
@@ -569,7 +898,7 @@ def warranty():
 
 
     # =========================================================
-    # Unexpected error
+    # Unexpected warranty error
     # =========================================================
 
     except Exception as e:
@@ -579,17 +908,25 @@ def warranty():
         )
 
 
-        current_date = get_current_date().strftime(
-            "%Y-%m-%dT%H:%M"
+        current_date = (
+            get_current_date()
+            .strftime(
+                "%Y-%m-%dT%H:%M"
+            )
         )
 
 
         error_entry = {
+
             "imei": imei,
+
             "sku_value": "N/A",
+
             "designation": "Error Occurred",
+
             "date_added": current_date,
-            "status_code": 500,
+
+            "status_code": 500
         }
 
 
@@ -600,7 +937,9 @@ def warranty():
 
         return render_template(
             "errordatanotfound.html",
-            error="An unexpected error occurred."
+            error=(
+                "An unexpected error occurred."
+            )
         )
 
 

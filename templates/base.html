@@ -3,50 +3,125 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Check warranty status with IMEI on the SBE-Cordon Group platform.">
+
+    <meta name="description" content="Check warranty status with IMEI and SNC on the SBE-Cordon Group platform.">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IMEI Check Warranty</title>
-    <link href="{{ url_for('static', filename='styles/style.css') }}" rel="stylesheet" />
-    
+
+    <title>SBE Warranty Checker</title>
+
+    <link href="{{ url_for('static', filename='styles/style.css') }}" rel="stylesheet">
 </head>
 
+
 <body>
-    {% block content %}
 
-    {% endblock %}
 
-    <!-- Copyright Notice -->
+    <!-- ========================================= -->
+    <!-- NAVIGATION                                -->
+    <!-- ========================================= -->
+
+    <nav class="main-nav">
+
+        <!-- IMEI WARRANTY -->
+
+        <a href="{{ url_for('home') }}"
+            class="nav-tab {% if request.path == '/' or request.path == '/warranty' %}active{% endif %}">
+            IMEI Warranty
+        </a>
+
+
+        <!-- SNC CHECKER -->
+
+        <a href="{{ url_for('snc_checker') }}" class="nav-tab {% if request.path == '/snc-checker' %}active{% endif %}">
+            SNC Checker
+        </a>
+
+    </nav>
+
+
+    <!-- ========================================= -->
+    <!-- PAGE CONTENT                              -->
+    <!-- ========================================= -->
+
+    <main>
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+    <!-- ========================================= -->
+    <!-- COPYRIGHT                                 -->
+    <!-- ========================================= -->
+
     <div class="copyright">
+
         <footer>
-            <p>&copy; PROPERTY OF SBE-CORDON GROUP - USE THIS WEBSITE SOLELY FOR SBE DAILY ACTIVITIES!</p>
-            <img src="{{ url_for('static', filename='images/LogoSBECordon.png') }}" alt="Logo Company" class="sbe-logo" />
-            <p>Powered by SBE-Cordon Group</p>
+
+            <p>
+                &copy; PROPERTY OF SBE-CORDON GROUP -
+                USE THIS WEBSITE SOLELY FOR SBE DAILY ACTIVITIES!
+            </p>
+
+            <img src="{{ url_for('static', filename='images/LogoSBECordon.png') }}" alt="Logo Company" class="sbe-logo">
+
+            <p>
+                Powered by SBE-Cordon Group
+            </p>
+
         </footer>
+
     </div>
 
 
-    <!-- Back to Top Button -->
-    <button id="backToTop" class="hidden">↑</button>
+    <!-- ========================================= -->
+    <!-- BACK TO TOP                               -->
+    <!-- ========================================= -->
+
+    <button id="backToTop" class="hidden">
+        ↑
+    </button>
 
 
+    <!-- ========================================= -->
+    <!-- JAVASCRIPT                                -->
+    <!-- ========================================= -->
 
     <script>
-        // Show/hide back-to-top button
-        const backToTop = document.getElementById('backToTop');
+
+        const backToTop =
+            document.getElementById('backToTop');
+
 
         window.addEventListener('scroll', () => {
+
             if (window.scrollY > 300) {
+
                 backToTop.classList.add('visible');
+
             } else {
+
                 backToTop.classList.remove('visible');
+
             }
+
         });
 
-        // Smooth scroll to top
+
         backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+
         });
+
     </script>
+
+
 </body>
 
 </html>

@@ -1,76 +1,55 @@
-/* Global Reset */
+/* ========================================================= */
+/* GLOBAL RESET                                               */
+/* ========================================================= */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Body Styling */
+/* ========================================================= */
+/* BODY                                                       */
+/* ========================================================= */
+
 body {
-  display: flex;
-  padding: 2rem;
+  margin: 0;
+  padding: 0;
   background-color: rgb(11, 11, 11);
   color: whitesmoke;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  font-size: 1.5rem;
+  gap: 1rem;
+  font-size: 1.1rem;
+  font-family: Arial, sans-serif;
   opacity: 0;
   animation: fadeIn 1s ease forwards;
-  font-family: Arial, sans-serif; /* Global font */
-  flex-direction: column; /* Makes the body a flex container */
 }
 
-/* Error Page Styling */
+/* ========================================================= */
+/* ERROR PAGE                                                 */
+/* ========================================================= */
+
 body.error-page {
-  font-family: Arial, sans-serif;
-  background-color: rgb(11, 11, 11);
-  color: #721c24;
-  display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
 .error-container {
   text-align: center;
-  background-color: #f8d7da;
-  padding: 20px;
-  border: 1px solid #f5c6cb;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  padding: 2rem;
 }
 
-.error-container h1 {
-  font-size: 3rem;
-  margin-bottom: 20px;
-}
+/* ========================================================= */
+/* INPUT                                                       */
+/* ========================================================= */
 
-.error-container p {
-  font-size: 1.8rem; /* Increased size for error message */
-  margin-bottom: 20px;
-}
-
-.error-container a {
-  text-decoration: none;
-  color: #004085;
-  padding: 10px 15px;
-  border: 1px solid #004085;
-  border-radius: 3px;
-  background-color: #cce5ff;
-  transition: background-color 0.3s;
-}
-
-.error-container a:hover {
-  background-color: #004085;
-  color: white;
-}
-
-/* Form Input Styling */
 input {
   width: 500px;
+  max-width: 90%;
   height: 60px;
   padding: 10px;
   font-size: 3rem;
@@ -85,7 +64,10 @@ input:focus {
   box-shadow: 0 0 8px #4caf50;
 }
 
-/* Button Styling */
+/* ========================================================= */
+/* BUTTON                                                      */
+/* ========================================================= */
+
 button {
   font-size: 2rem;
   padding: 1.5rem 3rem;
@@ -104,19 +86,236 @@ button:hover {
   transform: scale(1.05);
 }
 
+/* ========================================================= */
+/* GENERAL TEXT COLOURS                                       */
+/* ========================================================= */
+
 .red-text {
   color: red;
 }
 
 .orange-text {
-  color: orange; /* Use the actual color you want for amber */
+  color: orange;
 }
 
 .blue-text {
   color: blue;
 }
 
-/* Back to Top Button */
+.lightred-text {
+  color: #ff6666;
+  font-weight: bold;
+  font-size: 1.6rem;
+}
+
+/* ========================================================= */
+/* MAIN CONTENT                                                */
+/* ========================================================= */
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.3rem 2rem 1rem 2rem;
+  text-align: center;
+}
+
+/* ========================================================= */
+/* WARRANTY PAGE                                               */
+/* ========================================================= */
+
+.warranty-page {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.warranty-page h1 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+/* ========================================================= */
+/* WARRANTY MESSAGES - COMMON CONTAINER                       */
+/* ========================================================= */
+
+.warranty-messages {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+/* ========================================================= */
+/* WARRANTY COMMENTS - RED                                    */
+/* ========================================================= */
+
+.warranty-warning {
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: red !important;
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+  text-align: left !important;
+}
+
+.warranty-warning .warranty-intro {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+  text-align: left !important;
+}
+
+.warranty-warning ul {
+  margin: 2px 0 !important;
+  padding-left: 30px !important;
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+  text-align: left !important;
+}
+
+.warranty-warning li {
+  margin: 0 0 2px 0 !important;
+  padding: 0 !important;
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+  text-align: left !important;
+}
+
+.warranty-warning .warranty-action {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+  text-align: left !important;
+}
+
+/* ========================================================= */
+/* WARRANTY UPDATES - ORANGE                                  */
+/* ========================================================= */
+
+.warranty-updates {
+  width: 100%;
+  margin-top: 10px;
+  text-align: left !important;
+}
+
+.warranty-update {
+  width: 100%;
+  margin: 0 0 8px 0 !important;
+  padding: 0 !important;
+  color: orange !important;
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+  text-align: left !important;
+}
+
+.warranty-update ul {
+  margin: 0 !important;
+  padding-left: 30px !important;
+  text-align: left !important;
+}
+
+.warranty-update li {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 1.25rem !important;
+  line-height: 1.15 !important;
+}
+
+/* ========================================================= */
+/* WARRANTY INFORMATION                                       */
+/* ========================================================= */
+
+.warranty-info p {
+  margin: 0 0 18px 0;
+}
+
+.warranty-info p:last-child {
+  margin-bottom: 0;
+}
+
+/* ========================================================= */
+/* GOOGLE API NOTE                                             */
+/* ========================================================= */
+
+.note-warning {
+  color: red !important;
+  font-weight: bold;
+  animation: noteFlash 3s infinite;
+  margin: 10px 0;
+}
+
+@keyframes noteFlash {
+  0%,
+  100% {
+    color: red;
+    opacity: 1;
+  }
+
+  50% {
+    color: orange;
+    opacity: 0.4;
+  }
+}
+
+/* ========================================================= */
+/* FLASHING WARRANTY STATUS                                   */
+/* ========================================================= */
+
+@keyframes flash-warranty-status {
+  0%,
+  100% {
+    color: red;
+    opacity: 1;
+  }
+
+  50% {
+    color: orange;
+    opacity: 0.35;
+  }
+}
+
+.flash-warranty-status {
+  color: red;
+  font-weight: bold;
+  animation: flash-warranty-status 1.5s infinite ease-in-out;
+}
+
+/* ========================================================= */
+/* FLASHING IW MESSAGE                                        */
+/* ========================================================= */
+
+@keyframes flash-red-white {
+  0%,
+  100% {
+    background-color: #ff0000;
+    color: #ffffff;
+  }
+
+  50% {
+    background-color: #ffffff;
+    color: #ff0000;
+  }
+}
+
+.flash-iw {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  border: 2px solid #ff0000;
+  animation: flash-red-white 3s infinite ease-in-out;
+}
+
+/* ========================================================= */
+/* BACK TO TOP BUTTON                                         */
+/* ========================================================= */
+
 #backToTop {
   position: fixed;
   bottom: 20px;
@@ -147,7 +346,10 @@ button:hover {
   transform: scale(1.1);
 }
 
-/* Footer */
+/* ========================================================= */
+/* FOOTER                                                      */
+/* ========================================================= */
+
 footer {
   text-align: center;
   font-size: 0.7em;
@@ -162,25 +364,49 @@ footer:hover {
   color: #4caf50;
 }
 
-/* Google Logo Styling */
-.google-logo span:nth-child(1) {
-  color: #4285f4;
+/* ========================================================= */
+/* COPYRIGHT FOOTER                                            */
+/* ========================================================= */
+
+.copyright {
+  background-color: inherit;
+  color: whitesmoke;
+  text-align: center;
+  padding: 1rem 2rem;
+  border-top: 1px solid #444;
+  width: 100%;
+  margin-top: auto;
 }
-.google-logo span:nth-child(2) {
-  color: #ea4335;
+
+.copyright footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
-.google-logo span:nth-child(3) {
-  color: #fbbc05;
+
+.copyright footer p {
+  flex: 1;
+  font-size: 0.9rem;
+  text-align: left;
+  margin: 5px;
 }
-.google-logo span:nth-child(4) {
-  color: #4285f4;
+
+/* ========================================================= */
+/* SBE LOGO                                                    */
+/* ========================================================= */
+
+.sbe-logo {
+  max-width: 150px;
+  height: auto;
+  flex-shrink: 0;
 }
-.google-logo span:nth-child(5) {
-  color: #34a853;
-}
-.google-logo span:nth-child(6) {
-  color: #ea4335;
-}
+
+/* ========================================================= */
+/* GOOGLE LOGO                                                 */
+/* ========================================================= */
 
 .google-logo {
   font-family: Arial, sans-serif;
@@ -189,208 +415,346 @@ footer:hover {
   animation: pulse 3s infinite;
 }
 
-/* Main Content */
-main {
-  flex: 1; /* Takes up available vertical space */
-  padding: 2rem;
-  text-align: center;
+.google-logo span:nth-child(1) {
+  color: #4285f4;
 }
 
-/* Footer Section */
-.copyright {
-  background-color: inherit; /* Matches the body background */
-  color: whitesmoke;
-  text-align: center;
-  padding: 1rem 2rem; /* Adds spacing */
-  border-top: 1px solid #444; /* Optional: subtle border for separation */
-  width: 100%; /* Ensures the footer spans the full width */
-  margin-top: auto; /* Ensures the footer always sticks to the bottom */
+.google-logo span:nth-child(2) {
+  color: #ea4335;
 }
 
-.copyright footer {
+.google-logo span:nth-child(3) {
+  color: #fbbc05;
+}
+
+.google-logo span:nth-child(4) {
+  color: #4285f4;
+}
+
+.google-logo span:nth-child(5) {
+  color: #34a853;
+}
+
+.google-logo span:nth-child(6) {
+  color: #ea4335;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ========================================================= */
+/* TOP NAVIGATION                                              */
+/* ========================================================= */
+
+.main-nav {
   display: flex;
-  flex-wrap: wrap; /* Allows responsiveness */
-  justify-content: space-between; /* Spreads text and logo */
+  justify-content: center;
   align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
+  gap: 1rem;
+  width: 100%;
+  max-width: 1400px;
+  margin-bottom: 0.1rem;
 }
 
-.copyright footer p {
-  flex: 1; /* Distributes space evenly */
-  font-size: 0.9rem;
+/* ========================================================= */
+/* NAVIGATION TABS                                             */
+/* ========================================================= */
+
+.nav-tab {
+  display: inline-block;
+  color: whitesmoke;
+  background-color: #222;
+  border: 2px solid #444;
+  border-radius: 10px;
+  padding: 10px 25px;
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: bold;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.2s ease,
+    box-shadow 0.3s ease;
+}
+
+.nav-tab:hover {
+  background-color: #797676;
+  border-color: #666;
+  transform: translateY(-2px);
+}
+
+/* ========================================================= */
+/* ACTIVE NAVIGATION TAB                                      */
+/* ========================================================= */
+
+.nav-tab.active {
+  background-color: #008cff;
+  color: white;
+  border-color: #008cff;
+  box-shadow: 0 0 10px rgba(0, 140, 255, 0.6);
+}
+
+/* ========================================================= */
+/* SNC CLAIM INPUT                                             */
+/* ========================================================= */
+
+.snc-input {
+  width: 700px;
+  max-width: 90%;
+  height: 60px;
+  padding: 10px;
+  font-size: 3rem;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  transition: box-shadow 0.3s ease;
+}
+
+.snc-input:focus {
+  outline: none;
+  border: 2px solid #4caf50;
+  box-shadow: 0 0 8px #4caf50;
+}
+
+.warranty-status-red {
+  color: red;
+  font-weight: bold;
+}
+
+/* ========================================================= */
+/* SBE INTERNAL WARRANTY NOTE                                 */
+/* ========================================================= */
+
+.sbe-note-title {
+  color: red;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.sbe-internal-note {
+  width: fit-content;
+  max-width: 95%;
+  margin: 25px auto;
+  padding: 18px 25px;
+  border: 3px solid red;
+  border-radius: 10px;
+  background-color: #1a0000;
+  box-shadow:
+    0 0 8px red,
+    0 0 18px rgba(255, 0, 0, 0.5);
   text-align: left;
-  margin: 5px;
+  animation: sbe-note-attention 2s infinite ease-in-out;
 }
 
-.sbe-logo {
-  max-width: 150px; /* Keeps the logo size reasonable */
-  height: auto; /* Maintains aspect ratio */
-  flex-shrink: 0; /* Prevents shrinking */
+.sbe-note-text {
+  color: #e0e0e0;
+  font-size: 1rem;
+  line-height: 1.4;
+  margin: 0;
 }
 
-/* Responsive Design */
+/* ========================================================= */
+/* SBE NOTE - SIMPLE VERSION                                  */
+/* ========================================================= */
+
+.sbe-note {
+  width: 100%;
+  margin: 15px 0;
+  padding: 12px 16px;
+  background-color: #1c1c1c;
+  border-left: 4px solid #fbbc05;
+  border-radius: 6px;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* ========================================================= */
+/* T-CODE TABLE                                                */
+/* ========================================================= */
+
+.sbe-tcode-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 600px;
+  color: whitesmoke;
+  font-size: 1.05rem;
+}
+
+.sbe-tcode-table th,
+.sbe-tcode-table td {
+  border: 1px solid #777;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.sbe-tcode-table th {
+  background-color: #330000;
+  color: orange;
+  font-weight: bold;
+}
+
+.sbe-tcode-table td:first-child {
+  color: #ff6666;
+  font-weight: bold;
+  width: 100px;
+}
+
+/* ========================================================= */
+/* EXTRA WARRANTY DATE                                        */
+/* ========================================================= */
+
+.extra-warranty-date {
+  color: orange;
+  font-weight: bold;
+  margin-top: 15px;
+  margin-bottom: 0;
+}
+
+/* ========================================================= */
+/* SBE NOTE ATTENTION ANIMATION                               */
+/* ========================================================= */
+
+@keyframes sbe-note-attention {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px red,
+      0 0 18px rgba(255, 0, 0, 0.5);
+  }
+
+  50% {
+    box-shadow:
+      0 0 15px red,
+      0 0 30px rgba(255, 0, 0, 0.9);
+  }
+}
+
+/* ========================================================= */
+/* MOBILE / SMALL SCREENS                                     */
+/* ========================================================= */
+
 @media screen and (max-width: 600px) {
+  body {
+    font-size: 1rem;
+  }
+
+  main {
+    padding: 1rem;
+  }
+
+  .main-nav {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .nav-tab {
+    width: 90%;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 10px 20px;
+  }
+
+  .snc-input {
+    width: 90%;
+    max-width: 90%;
+    height: 55px;
+    font-size: 2rem;
+  }
+
+  input {
+    width: 90%;
+    max-width: 90%;
+    height: 55px;
+    font-size: 2rem;
+  }
+
+  button {
+    font-size: 1.5rem;
+    padding: 1rem 2rem;
+  }
+
+  .warranty-messages {
+    padding-left: 15px !important;
+    padding-right: 15px;
+  }
+
+  .warranty-warning,
+  .warranty-warning .warranty-intro,
+  .warranty-warning ul,
+  .warranty-warning li,
+  .warranty-warning .warranty-action,
+  .warranty-update {
+    font-size: 1.05rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .warranty-info p {
+    margin-bottom: 15px;
+  }
+
   .copyright footer {
-    flex-direction: column; /* Stacks elements vertically */
+    flex-direction: column;
     text-align: center;
   }
 
+  .copyright footer p {
+    text-align: center;
+    margin: 5px 0;
+  }
+
   .sbe-logo {
-    margin: 10px 0; /* Adds spacing for the logo */
+    margin: 10px 0;
+  }
+
+  .sbe-note {
+    width: 100%;
+    margin: 15px 0;
+    padding: 12px 16px;
+  }
+
+  .sbe-note-title {
+    color: #fbbc05;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  .sbe-note-text {
+    color: #e0e0e0;
+    font-size: 1rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .sbe-tcode-table {
+    min-width: 500px;
+    font-size: 0.95rem;
   }
 }
 
-/* Fade-In Animation */
+/* ========================================================= */
+/* PAGE FADE-IN                                                */
+/* ========================================================= */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
-}
-
-/* =========================================
-   WARRANTY MESSAGES - COMMON CONTAINER
-   ========================================= */
-
-.warranty-messages {
-  width: 100%;
-  max-width: 1600px;
-
-  margin: 0 auto;
-
-  text-align: left;
-}
-
-/* =========================================
-   WARRANTY COMMENTS - RED
-   ========================================= */
-
-.warranty-warning {
-  width: 100%;
-
-  margin: 0 !important;
-  padding: 0 !important;
-
-  color: red !important;
-
-  font-size: 1.25rem !important;
-  line-height: 1.15 !important;
-
-  text-align: left !important;
-}
-
-.warranty-warning .warranty-intro {
-  margin: 0 !important;
-  padding: 0 !important;
-
-  font-size: 1.25rem !important;
-  line-height: 1.15 !important;
-
-  text-align: left !important;
-}
-
-.warranty-warning ul {
-  margin: 2px 0 !important;
-
-  padding-left: 30px !important;
-
-  font-size: 1.25rem !important;
-  line-height: 1.15 !important;
-
-  text-align: left !important;
-}
-
-.warranty-warning li {
-  margin: 0 0 2px 0 !important;
-  padding: 0 !important;
-
-  font-size: 1.25rem !important;
-  line-height: 1.15 !important;
-
-  text-align: left !important;
-}
-
-.warranty-warning .warranty-action {
-  margin: 0 !important;
-  padding: 0 !important;
-
-  font-size: 1.25rem !important;
-  line-height: 1.15 !important;
-
-  text-align: left !important;
-}
-
-/* =========================================
-   WARRANTY UPDATES - ORANGE
-   ========================================= */
-
-.warranty-updates {
-  width: 100%;
-
-  margin-top: 10px;
-
-  text-align: left !important;
-}
-
-.warranty-update {
-  width: 100%;
-
-  margin: 0 0 8px 0 !important;
-  padding: 0 !important;
-
-  color: orange !important;
-
-  font-size: 1.25rem !important;
-  line-height: 1.15 !important;
-
-  text-align: left !important;
-}
-
-/* =========================================
-   FLASHING NOTE
-   ========================================= */
-
-.note-warning {
-  color: red !important;
-  font-weight: bold;
-  animation: noteFlash 3s infinite;
-  margin: 10px 0;
-}
-
-@keyframes noteFlash {
-  0%,
-  100% {
-    color: red;
-    opacity: 1;
-  }
-
-  50% {
-    color: orange;
-    opacity: 0.4;
-  }
-}
-
-@keyframes flash-red-white {
-  0%,
-  100% {
-    background-color: #ff0000; /* Solid Red */
-    color: #ffffff; /* White Text */
-  }
-  50% {
-    background-color: #ffffff; /* Solid White */
-    color: #ff0000; /* Red Text */
-  }
-}
-
-.flash-iw {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: bold;
-  border: 2px solid #ff0000;
-  /* This loops the flash animation smoothly every 1 second */
-  animation: flash-red-white 3s infinite ease-in-out;
 }
