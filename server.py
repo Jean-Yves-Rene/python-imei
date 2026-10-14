@@ -250,8 +250,8 @@ def home():
 def snc_checker():
 
     result = None
-
     error = None
+    requires_fingerprint_calibration = False
 
 
     # =====================================================
@@ -316,6 +316,48 @@ def snc_checker():
                         result = data.get(
                             'data',
                             {}
+                        )
+
+                        
+                        # =====================================
+                        # Fingerprint display calibration check
+                        # =====================================
+
+                        calibration_models = {
+                            "pixel 6",
+                            "pixel 6 pro",
+                            "pixel 6a",
+                            "pixel 7",
+                            "pixel 7 pro",
+                            "pixel 7a",
+                            "pixel 8",
+                            "pixel 8 pro",
+                            "pixel 8a",
+                            "pixel 9a",
+                            "pixel 10a",
+                            "pixel 11a",
+
+                        }
+
+                        product_line = str(
+                            result.get("product_line", "")
+                        ).strip().lower()
+
+                        repair_descriptions = [
+                            str(action.get("repair_description", ""))
+                            .strip()
+                            .lower()
+                            for t_code in result.get("t_codes", [])
+                            for action in t_code.get("repair_actions", [])
+                        ]
+
+                        requires_fingerprint_calibration = (
+                            product_line in calibration_models
+                            and any(
+                                "replace display" in description
+                                or "replace mainboard" in description
+                                for description in repair_descriptions
+                            )
                         )
 
 
@@ -425,11 +467,18 @@ def snc_checker():
     # Display SNC page
     # =====================================================
 
+    
     return render_template(
         'snc-checker.html',
         result=result,
-        error=error
+        error=error,
+        requires_fingerprint_calibration=(
+            requires_fingerprint_calibration
+            if result is not None
+            else False
+        )
     )
+
 
 
 # =========================================================

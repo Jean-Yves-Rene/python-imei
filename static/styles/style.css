@@ -758,3 +758,25 @@ footer:hover {
     opacity: 1;
   }
 }
+
+.fingerprint-calibration-warning {
+  color: #ff0000;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  padding: 15px;
+  margin-top: 25px;
+  border: 2px solid #ff0000;
+  border-radius: 4px;
+  animation: fingerprint-warning-flash 3s infinite;
+}
+
+@keyframes fingerprint-warning-flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}

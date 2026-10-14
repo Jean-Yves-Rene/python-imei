@@ -288,6 +288,14 @@
 
     {% endif %}
 
+    {% if requires_fingerprint_calibration %}
+    <div class="fingerprint-calibration-warning">
+        ⚠️ If you have replaced MB or display, calibration
+        fingerprint display needs to be performed.
+    </div>
+    {% endif %}
+
+
 </div>
 
 {% endfor %}
